@@ -1,4 +1,3 @@
-import React from "react";
 import { Text, Center } from "@chakra-ui/react";
 import { ServicioDeportistas } from "../../services/ServicioDeportistas";
 import RecordatorioCumpleaños from "./RecordatorioCumpleaños";

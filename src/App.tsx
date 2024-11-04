@@ -1,4 +1,4 @@
-import { ChakraProvider, extendTheme, Text } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import Encabezado from "./components/Encabezado";
 import { useState } from "react";
 import GestionCursos from "./components/Cursos/GestionCursos";

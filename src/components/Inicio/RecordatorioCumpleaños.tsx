@@ -1,8 +1,7 @@
-import React from "react";
 import { useEffect, useState } from "react";
 import { ServicioDeportistas } from "../../services/ServicioDeportistas";
 import { Deportista } from "../../models/Deportista";
-import { Text, Center } from "@chakra-ui/react";
+import { Text } from "@chakra-ui/react";
 
 type Props = {
   servicioDeportistas: ServicioDeportistas;
