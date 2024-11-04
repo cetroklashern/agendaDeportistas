@@ -83,10 +83,9 @@ const CeldaGrupos = (props: Props) => {
                   {obtenerInicialesONombreCurso(grupo.curso.nombre)}
                 </Text>
                 <Text fontSize="14px" height={"18px"} margin={0} padding={0}>
-                  {grupo.cupos -
-                    ServicioAgendas.getInstancia().obtenerAgendasGrupo(
-                      grupo.idGrupo
-                    )}
+                  {ServicioAgendas.getInstancia().obtenerAgendasGrupo(
+                    grupo.idGrupo
+                  )}
                   /{grupo.cupos}
                 </Text>
                 <Text fontSize="12px" height={"18px"} margin={0} padding={0}>

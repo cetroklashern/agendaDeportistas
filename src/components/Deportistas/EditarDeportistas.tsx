@@ -11,15 +11,12 @@ import {
   Box,
   Checkbox,
   Image,
-  extendTheme,
   Textarea,
   FormHelperText,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { ServicioDeportistas } from "../../services/ServicioDeportistas";
 import { Deportista } from "../../models/Deportista";
-import DatePicker, { registerLocale } from "react-datepicker";
-import { es } from "date-fns/locale";
 import React from "react";
 import VerAcudientes from "../Acudiente/VerAcudiente";
 import EditarAcudientes from "../Acudiente/EditarAcudientes";
@@ -28,9 +25,6 @@ import DateTimePicker from "../Controles/DateTimePicker";
 import { Constantes } from "../../models/Constantes";
 import { FaRegTimesCircle, FaSave } from "react-icons/fa";
 //import { Acudiente } from "../../models/Acudiente";
-
-// Registrar el idioma español en react-datepicker
-registerLocale("es", es);
 
 type Props = {
   setIsEditing: (element: boolean) => void;
@@ -122,7 +116,6 @@ function EditarDeportistas(props: Props) {
   useEffect(() => {
     if (props.deportistaSelected) {
       setNombreDeportista(props.deportistaSelected.nombre);
-      setEdad(props.deportistaSelected.edad);
       setFechaNacimiento(props.deportistaSelected.fechaNacimiento);
       setTipoId(props.deportistaSelected.tipoId);
       setId(props.deportistaSelected.id);
@@ -148,12 +141,49 @@ function EditarDeportistas(props: Props) {
     }
   }, [props.deportistaSelected]);
 
+  useEffect(() => {
+    if (fechaNacimiento != null) {
+      console.log("Fecha Nacimiento: " + fechaNacimiento);
+      //calcular la edad a partir de la fecha de nacimiento
+      const hoy = new Date();
+      const fechaNacimientoDeportista = new Date(fechaNacimiento);
+      let edadCaculada =
+        hoy.getFullYear() - fechaNacimientoDeportista.getFullYear();
+      const mes = hoy.getMonth() - fechaNacimientoDeportista.getMonth();
+
+      if (
+        mes < 0 ||
+        (mes === 0 && hoy.getDate() < fechaNacimientoDeportista.getDate())
+      ) {
+        edadCaculada--;
+      }
+
+      if (edadCaculada <= 0) {
+        //calcular los meses de nacimiento
+        const diasNacimiento =
+          hoy.getDate() - fechaNacimientoDeportista.getDate();
+        const mesesNacimiento =
+          hoy.getMonth() - fechaNacimientoDeportista.getMonth();
+        const añosNacimiento =
+          hoy.getFullYear() - fechaNacimientoDeportista.getFullYear();
+        edadCaculada = añosNacimiento * 12 + mesesNacimiento;
+        if (diasNacimiento < 0) {
+          edadCaculada--;
+        }
+
+        edadCaculada = edadCaculada / 12;
+      }
+
+      setEdad(edadCaculada);
+    }
+  }, [fechaNacimiento]);
+
   const handleClickCancelar = (event: boolean) => {
     props.setIsEditing(event);
   };
 
   //evento para guardar los datos capturados en pantalla
-  const handleClickGuardar = async (event: boolean) => {
+  const handleClickGuardar = async () => {
     // Crear el objeto
     const nuevoDeportista = new Deportista(
       id,
@@ -180,16 +210,15 @@ function EditarDeportistas(props: Props) {
 
     // Se envian los datos capturados a una base de datos
     //console.log(nuevoDeportista);
-    let response = null;
 
     if (props.isNewDeportista) {
-      response = await props.servicioDeportistas?.crearDeportista(
+      await props.servicioDeportistas?.crearDeportista(
         nuevoDeportista,
         fotoDeportista,
         fotoDocumento
       );
     } else {
-      response = await props.servicioDeportistas?.actualizarDeportista(
+      await props.servicioDeportistas?.actualizarDeportista(
         nuevoDeportista,
         fotoDeportista,
         fotoDocumento
@@ -294,6 +323,16 @@ function EditarDeportistas(props: Props) {
     setAcudientes(acudientes.filter((ac) => ac.id !== id));
   }
 
+  function mostrarEdad(): React.ReactNode {
+    if (edad > 1) {
+      return <span>{edad} años</span>;
+    } else if (edad == 1) {
+      return <span>{edad} año</span>;
+    } else {
+      return <span>{edad * 12} meses</span>;
+    }
+  }
+
   return (
     <>
       <EditarAcudientes
@@ -329,8 +368,10 @@ function EditarDeportistas(props: Props) {
               placeholder="Seleccione el numero de identificación"
               onChange={(e) => setTipoId(e.target.value)}
             >
+              <option value="Pasaporte">Tarjeta de identidad</option>
               <option value="Cedula">Cédula</option>
               <option value="Pasaporte">Pasaporte</option>
+              <option value="Pasaporte">Registro civil</option>
             </Select>
           </FormControl>
         </GridItem>
@@ -346,24 +387,18 @@ function EditarDeportistas(props: Props) {
           </FormControl>
         </GridItem>
         <GridItem rowSpan={1} colSpan={1}>
-          <FormControl isRequired>
-            <FormLabel>Edad</FormLabel>
-            <NumberInput
-              value={edad}
-              defaultValue={0}
-              onChange={(value) => setEdad(Number(value))}
-            >
-              <NumberInputField />
-            </NumberInput>
-          </FormControl>
-        </GridItem>
-        <GridItem rowSpan={1} colSpan={1}>
           <DateTimePicker
             fechaNacimiento={fechaNacimiento}
             setFechaNacimiento={setFechaNacimiento}
             isRequired={true}
             label={"Fecha de Nacimiento"}
           />
+        </GridItem>
+        <GridItem rowSpan={1} colSpan={1}>
+          <FormControl>
+            <FormLabel>Edad</FormLabel>
+            <FormLabel>{mostrarEdad()}</FormLabel>
+          </FormControl>
         </GridItem>
         <GridItem rowSpan={1} colSpan={1}>
           <FormControl isRequired>
@@ -606,7 +641,7 @@ function EditarDeportistas(props: Props) {
             mt={4}
             type="submit"
             margin={"30px"}
-            onClick={() => handleClickGuardar(false)}
+            onClick={() => handleClickGuardar()}
             isDisabled={!isFormValid}
             leftIcon={<FaSave />}
           >

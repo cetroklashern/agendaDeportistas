@@ -11,7 +11,7 @@ import {
 import { ServicioCursos } from "../../services/ServicioCursos";
 import { useEffect, useState } from "react";
 import { Curso } from "../../models/Curso";
-import { FaEye, FaTrashAlt, FaPlus } from "react-icons/fa";
+import { FaTrashAlt, FaPlus } from "react-icons/fa";
 
 type Props = {
   isSubmitting: boolean;
@@ -22,7 +22,6 @@ type Props = {
 function VerCursos(props: Props) {
   const [isEliminated, setIsEliminated] = useState(false);
   const [cursos, setCursos] = useState<Curso[]>([]);
-  const [curso, setCurso] = useState(null);
 
   //al cargar el formulario se deben obtener los cursos usando el servicioCursos
   useEffect(() => {

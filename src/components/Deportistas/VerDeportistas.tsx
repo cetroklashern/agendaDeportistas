@@ -103,6 +103,16 @@ function VerDeportistas(props: Props) {
     return fecha.toLocaleDateString(undefined, options);
   };
 
+  function mostrarEdad(edad: number): React.ReactNode {
+    if (edad > 1) {
+      return <span>{edad} años</span>;
+    } else if (edad == 1) {
+      return <span>{edad} año</span>;
+    } else {
+      return <span>{edad * 12} meses</span>;
+    }
+  }
+
   return (
     <>
       <Button
@@ -165,7 +175,9 @@ function VerDeportistas(props: Props) {
                 <Td style={{ border: "1px solid black" }}>
                   {formatDate(deportista.fechaNacimiento.toString())}
                 </Td>
-                <Td style={{ border: "1px solid black" }}>{deportista.edad}</Td>
+                <Td style={{ border: "1px solid black" }}>
+                  {mostrarEdad(deportista.edad)}
+                </Td>
                 <Td style={{ border: "1px solid black" }}>
                   {deportista.tipoId}:{deportista.id}
                 </Td>

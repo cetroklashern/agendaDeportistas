@@ -1,4 +1,3 @@
-import { ListItemProps } from "@chakra-ui/react";
 import { Acudiente } from "./Acudiente";
 
 export class Deportista {

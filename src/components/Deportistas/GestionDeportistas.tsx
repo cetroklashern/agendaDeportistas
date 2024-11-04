@@ -1,12 +1,9 @@
 import { Text, Center } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { Deportista } from "../../models/Deportista";
-import { Acudiente } from "../../models/Acudiente";
 import { ServicioDeportistas } from "../../services/ServicioDeportistas";
 import EditarDeportistas from "./EditarDeportistas";
 import VerDeportistas from "./VerDeportistas";
-
-type Props = { titulo: string };
 
 const deportistaVacio = {
   id: "",
@@ -31,7 +28,7 @@ const deportistaVacio = {
   acudientes: [],
 };
 
-function GestionDeportistas(props: Props) {
+function GestionDeportistas() {
   const [isEditing, setIsEditing] = useState(false);
   const [isNewDeportista, setIsNewDeportista] = useState(false);
   const [deportistaSelected, setDeportistaSelected] =
@@ -70,7 +67,7 @@ function GestionDeportistas(props: Props) {
     }
   }, [deportistaSelected]);
 
-  function handleNewDeportistaClick(newItem: boolean): void {
+  function handleNewDeportistaClick(): void {
     setIsNewDeportista(true);
     setIsEditing(true);
     setDeportistaSelected(deportistaVacio);
@@ -78,7 +75,7 @@ function GestionDeportistas(props: Props) {
     setFotoDocumento("");
   }
 
-  function handleSaveDeportista(newItem: boolean): void {
+  function handleSaveDeportista(): void {
     setIsEditing(false);
   }
 

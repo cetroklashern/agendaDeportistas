@@ -58,21 +58,6 @@ function VerProfesores(props: Props) {
     setIsEliminated(!isEliminated);
   };
 
-  // Formatear la fecha en un formato legible
-  const formatDate = (date: string) => {
-    const fecha = new Date(date);
-    if (isNaN(fecha.getTime())) {
-      return "Fecha inválida";
-    }
-    //console.log("FECHA: " + fecha);
-    const options: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    };
-    return fecha.toLocaleDateString(undefined, options);
-  };
-
   return (
     <>
       <Button

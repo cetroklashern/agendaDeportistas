@@ -4,7 +4,6 @@ import {
   Grid,
   GridItem,
   ModalBody,
-  ModalFooter,
   ModalContent,
   Modal,
   ModalOverlay,
@@ -20,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Grupo } from "../../models/Grupo";
-import { FaSearch, FaRegTimesCircle } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import { ServicioDeportistas } from "../../services/ServicioDeportistas";
 import { Deportista } from "../../models/Deportista";
 import { Agenda } from "../../models/Agenda";
@@ -36,7 +35,6 @@ type Props = {
 function AgendarClase(props: Props) {
   const [deportistas, setDeportistas] = useState<Deportista[]>([]);
   const [agendasGrupo, setAgendasGrupo] = useState<Agenda[]>([]);
-  const [isUpdated, setIsUpdated] = useState(false);
   const [isBuscarDeportistaOpen, setIsBuscarDeportistaOpen] = useState(false);
   const [nombre, setNombre] = useState("");
 

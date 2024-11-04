@@ -142,7 +142,7 @@ function EditarGrupo(props: Props) {
         dia,
         horaInicio,
         horaFin,
-        cupos,
+        6,
         profesor,
         ubicacion
       );

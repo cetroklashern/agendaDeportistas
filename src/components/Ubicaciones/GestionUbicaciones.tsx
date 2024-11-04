@@ -1,13 +1,11 @@
 import { Text, Center } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ServicioUbicaciones } from "../../services/ServicioUbicaciones";
 import VerUbicaciones from "./VerUbicaciones";
 import EditarUbicaciones from "./EditarUbicaciones";
 import { Ubicacion } from "../../models/Ubicacion";
 
-type Props = { titulo: string };
-
-function GestionUbicaciones(props: Props) {
+function GestionUbicaciones() {
   const [isEditing, setIsEditing] = useState(false);
   const [isNewUbicacion, setIsNewUbicacion] = useState(false);
   const [ubicacionSelected, setUbicacionSelected] = useState<Ubicacion>(
@@ -32,7 +30,7 @@ function GestionUbicaciones(props: Props) {
     setIsNewUbicacion(false);
   }
 
-  function handleNewUbicacionClick(element: boolean): void {
+  function handleNewUbicacionClick(): void {
     setIsNewUbicacion(true);
     setIsEditing(true);
     setUbicacionSelected(
@@ -50,7 +48,7 @@ function GestionUbicaciones(props: Props) {
     );
   }
 
-  function handleSaveUbicacion(newItem: boolean): void {
+  function handleSaveUbicacion(): void {
     setIsEditing(false);
   }
 

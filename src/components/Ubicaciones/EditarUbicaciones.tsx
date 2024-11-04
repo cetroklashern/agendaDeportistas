@@ -85,7 +85,7 @@ function EditarUbicaciones(props: Props) {
   };
 
   //evento para guardar los datos capturados en pantalla
-  const handleClickGuardar = async (event: boolean) => {
+  const handleClickGuardar = async () => {
     // Crear el objeto
     const nuevaUbicacion = new Ubicacion(
       1,
@@ -101,16 +101,11 @@ function EditarUbicaciones(props: Props) {
 
     // Se envian los datos capturados a una base de datos
     //console.log(nuevaUbicacion);
-    let response = null;
 
     if (props.isNewUbicacion) {
-      response = await props.servicioUbicaciones?.crearUbicacion(
-        nuevaUbicacion
-      );
+      await props.servicioUbicaciones?.crearUbicacion(nuevaUbicacion);
     } else {
-      response = await props.servicioUbicaciones?.actualizarUbicacion(
-        nuevaUbicacion
-      );
+      await props.servicioUbicaciones?.actualizarUbicacion(nuevaUbicacion);
     }
 
     props.onSaveUbicacion(true);
@@ -278,7 +273,7 @@ function EditarUbicaciones(props: Props) {
             mt={4}
             type="submit"
             margin={"30px"}
-            onClick={() => handleClickGuardar(false)}
+            onClick={() => handleClickGuardar()}
             isDisabled={!isFormValid}
             leftIcon={<FaSave />}
           >

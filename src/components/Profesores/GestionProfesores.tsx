@@ -1,5 +1,5 @@
 import { Text, Center } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import VerProfesores from "./VerProfesores";
 import EditarProfesores from "./EditarProfesores";
 import { Profesor } from "../../models/Profesor";
@@ -11,7 +11,7 @@ function GestionProfesores(props: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [isNewProfesor, setIsNewProfesor] = useState(false);
   const [profesorSelected, setProfesorSelected] = useState<Profesor>(
-    new Profesor("", "", "", 0, "", "", "", "", "", 0, [])
+    new Profesor("", "", "", "0", "", "", "", "", "", "0", [])
   );
 
   const servicioProfesores = ServicioProfesores.getInstancia();
@@ -22,13 +22,15 @@ function GestionProfesores(props: Props) {
     setIsNewProfesor(false);
   }
 
-  function handleNewProfesorClick(element: boolean): void {
+  function handleNewProfesorClick(): void {
     setIsNewProfesor(true);
     setIsEditing(true);
-    setProfesorSelected(new Profesor("", "", "", 0, "", "", "", "", "", 0, []));
+    setProfesorSelected(
+      new Profesor("", "", "", "0", "", "", "", "", "", "0", [])
+    );
   }
 
-  function handleSaveProfesor(newItem: boolean): void {
+  function handleSaveProfesor(): void {
     setIsEditing(false);
   }
 

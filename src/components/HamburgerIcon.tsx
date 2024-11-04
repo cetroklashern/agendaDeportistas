@@ -1,8 +1,6 @@
 import { Box, Image } from "@chakra-ui/react";
 
-type Props = {};
-
-function HamburgerIcon(props: Props) {
+function HamburgerIcon() {
   return (
     <>
       <Box>

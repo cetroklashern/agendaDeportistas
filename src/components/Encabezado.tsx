@@ -1,4 +1,3 @@
-import { BiBold } from "react-icons/bi";
 import HamburgerIcon from "./HamburgerIcon";
 import {
   Menu,

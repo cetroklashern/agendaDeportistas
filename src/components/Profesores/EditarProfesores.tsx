@@ -6,9 +6,6 @@ import {
   Grid,
   GridItem,
   Select,
-  NumberInput,
-  NumberInputField,
-  Box,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { ServicioProfesores } from "../../services/ServicioProfesores";
@@ -102,7 +99,7 @@ function EditarProfesores(props: Props) {
   };
 
   //evento para guardar los datos capturados en pantalla
-  const handleClickGuardar = async (event: boolean) => {
+  const handleClickGuardar = async () => {
     // Crear el objeto
     const nuevoProfesor = new Profesor(
       id,
@@ -121,13 +118,10 @@ function EditarProfesores(props: Props) {
     // Se envian los datos capturados a una base de datos
     console.log(nuevoProfesor);
 
-    let response = null;
     if (props.isNewProfesor) {
-      response = await props.servicioProfesores?.crearProfesor(nuevoProfesor);
+      await props.servicioProfesores?.crearProfesor(nuevoProfesor);
     } else {
-      response = await props.servicioProfesores?.actualizarProfesor(
-        nuevoProfesor
-      );
+      await props.servicioProfesores?.actualizarProfesor(nuevoProfesor);
     }
 
     props.onSaveProfesor(true);
@@ -339,7 +333,7 @@ function EditarProfesores(props: Props) {
             mt={4}
             type="submit"
             margin={"30px"}
-            onClick={() => handleClickGuardar(false)}
+            onClick={() => handleClickGuardar()}
             isDisabled={!isFormValid}
             leftIcon={<FaSave />}
           >

@@ -25,7 +25,7 @@ function VerGrupos() {
       "",
       "",
       "",
-      8,
+      6,
       new Profesor("", "", "", "", "", "", "", "", "", "0", []),
       new Ubicacion(0, "", "", "", "", false, new Date(), new Date(), [])
     )

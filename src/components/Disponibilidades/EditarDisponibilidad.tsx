@@ -2,11 +2,9 @@ import {
   FormControl,
   FormLabel,
   Button,
-  Input,
   Grid,
   GridItem,
   Select,
-  Checkbox,
   ModalBody,
   ModalFooter,
   ModalContent,
@@ -17,7 +15,7 @@ import {
   NumberInput,
   NumberInputField,
 } from "@chakra-ui/react";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Disponibilidad } from "../../models/Disponibilidad";
 import { FaRegTimesCircle, FaSave } from "react-icons/fa";
 
@@ -35,9 +33,7 @@ function EditarDisponibilidad(props: Props) {
   const [horaInicio, setHoraInicio] = useState(0);
   const [horaFin, setHoraFin] = useState(0);
   const [isFormValid, setIsFormValid] = useState(false);
-  const [disponibilidad, setDisponibilidad] = useState<Disponibilidad | null>(
-    null
-  );
+  const [disponibilidad] = useState<Disponibilidad | null>(null);
 
   // Se carga los datos del Disponibilidad seleccionado
   useEffect(() => {

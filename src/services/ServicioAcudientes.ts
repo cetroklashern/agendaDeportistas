@@ -2,7 +2,6 @@ import { Acudiente } from "../models/Acudiente";
 import axios from "axios";
 
 export class ServicioAcudientes {
-  private acudientes: Acudiente[];
   private static instancia: ServicioAcudientes;
   private ruta: String;
 
@@ -15,7 +14,6 @@ export class ServicioAcudientes {
   }
 
   constructor() {
-    this.acudientes = [];
     this.ruta = "http://localhost:8080/api/acudientes/";
   }
 

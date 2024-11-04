@@ -8,6 +8,7 @@ import GestionHorarios from "./components/Horarios/GestionHorarios";
 import GestionDeportistas from "./components/Deportistas/GestionDeportistas";
 import GestionUbicaciones from "./components/Ubicaciones/GestionUbicaciones";
 import "react-datepicker/dist/react-datepicker.css";
+import PantallaInicio from "./components/Inicio/PantallaIncio";
 
 function App() {
   const [optionSelected, setOptionSelected] = useState({
@@ -71,13 +72,13 @@ function App() {
           ) : optionSelected.id === 2 ? (
             <GestionProfesores titulo={optionSelected.name} />
           ) : optionSelected.id === 3 ? (
-            <GestionUbicaciones titulo={optionSelected.name} />
+            <GestionUbicaciones />
           ) : optionSelected.id === 4 ? (
-            <GestionDeportistas titulo={optionSelected.name} />
+            <GestionDeportistas />
           ) : optionSelected.id === 5 ? (
             <GestionHorarios titulo={optionSelected.name} />
           ) : (
-            <Text>{optionSelected.page}</Text>
+            <PantallaInicio />
           )}
         </div>
       </div>

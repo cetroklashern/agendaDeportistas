@@ -306,7 +306,7 @@ export class ServicioGrupos {
     try {
       const response = await axios.post<Grupo>(this.ruta + "actualizar", grupo);
 
-      return grupo;
+      return response.data;
     } catch (error) {
       console.log(error);
       throw new Error("Failed to create grupo");
