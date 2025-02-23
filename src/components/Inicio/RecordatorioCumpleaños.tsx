@@ -3,10 +3,6 @@ import { ServicioDeportistas } from "../../services/ServicioDeportistas";
 import { Deportista } from "../../models/Deportista";
 import { Text } from "@chakra-ui/react";
 
-type Props = {
-  servicioDeportistas: ServicioDeportistas;
-};
-
 // Función para obtener el nombre del mes actual
 const getMonthName = (monthIndex: number) => {
   const monthNames = [
@@ -26,7 +22,7 @@ const getMonthName = (monthIndex: number) => {
   return monthNames[monthIndex];
 };
 
-const RecordatorioCumpleaños = (props: Props) => {
+const RecordatorioCumpleaños = () => {
   const [deportistas, setDeportistas] = useState<Deportista[]>([]);
   const [deportistasCumplen, setDeportistasCumplen] = useState<Deportista[]>(
     []
@@ -38,7 +34,8 @@ const RecordatorioCumpleaños = (props: Props) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await props.servicioDeportistas.obtenerDeportistas();
+        const data =
+          await ServicioDeportistas.getInstancia().obtenerDeportistas();
         setDeportistas(data);
       } catch (error) {
         console.error("Error fetching deportistas:", error);
@@ -63,14 +60,11 @@ const RecordatorioCumpleaños = (props: Props) => {
 
   return (
     <div style={{ margin: "20px" }}>
-      <Text as="b" textAlign="center" fontSize="15px" color="black">
-        Cumpleañeros de {currentMonthName}
-      </Text>
       {deportistasCumplen.length > 0 ? (
         <ul>
-          {deportistasCumplen.map((deportista, index) => (
-            <li key={index}>
-              🎉 {deportista.nombre} - Cumple años el{" "}
+          {deportistasCumplen.map((deportista) => (
+            <li key={deportista.id}>
+              🎉 {deportista.nombre} -{" "}
               {new Date(deportista.fechaNacimiento).getDate()} de{" "}
               {currentMonthName}
             </li>

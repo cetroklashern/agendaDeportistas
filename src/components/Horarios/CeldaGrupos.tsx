@@ -2,6 +2,8 @@ import { Box, Button, Grid, GridItem, HStack, Text } from "@chakra-ui/react";
 import { Grupo } from "../../models/Grupo";
 import { FaEye, FaTrash, FaAddressBook } from "react-icons/fa";
 import ServicioAgendas from "../../services/ServicioAgenda";
+import { Profesor } from "../../models/Profesor";
+import { Ubicacion } from "../../models/Ubicacion";
 
 // Función para calcular la luminosidad del color
 const getContrastYIQ = (hexcolor: string) => {
@@ -20,6 +22,8 @@ type Props = {
   onAgendarGrupo: (grupo: Grupo) => void;
   onVerDetalleGrupo: (grupo: Grupo) => void;
   onEliminarGrupo: (idGrupo: number) => void;
+  profesores: Profesor[];
+  ubicaciones: Ubicacion[];
 };
 
 const CeldaGrupos = (props: Props) => {
@@ -47,6 +51,11 @@ const CeldaGrupos = (props: Props) => {
     }
     // Si tiene 20 caracteres o menos, devolver el nombre completo
     return nombre;
+  }
+
+  function obtenerNombreProfesor(idProfesor: string): string {
+    const profesor = props.profesores.find((p) => p.id === idProfesor);
+    return profesor?.nombre || "Profesor Desconocido";
   }
 
   const gruposDelDia = props.grupos.filter(
@@ -83,13 +92,17 @@ const CeldaGrupos = (props: Props) => {
                   {obtenerInicialesONombreCurso(grupo.curso.nombre)}
                 </Text>
                 <Text fontSize="14px" height={"18px"} margin={0} padding={0}>
-                  {ServicioAgendas.getInstancia().obtenerAgendasGrupo(
+                  {ServicioAgendas.getInstancia().obtenerCantidadAgendasGrupo(
                     grupo.idGrupo
                   )}
                   /{grupo.cupos}
                 </Text>
                 <Text fontSize="12px" height={"18px"} margin={0} padding={0}>
-                  {grupo.profesor.nombre}
+                  {obtenerNombreProfesor(
+                    grupo.profesor.id == null
+                      ? grupo.profesor.toString()
+                      : grupo.profesor.id
+                  )}
                 </Text>
                 <HStack
                   spacing={2}

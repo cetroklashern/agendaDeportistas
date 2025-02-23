@@ -136,159 +136,154 @@ function EditarAcudientes(props: Props) {
   };
 
   return (
-    <>
-      <Modal isOpen={props.isEditarAcudienteOpen} onClose={props.onClose}>
-        <ModalOverlay />
-        <ModalContent
+    <Modal isOpen={props.isEditarAcudienteOpen} onClose={props.onClose}>
+      <ModalOverlay />
+      <ModalContent
+        style={{
+          minWidth: 600,
+        }}
+      >
+        <ModalHeader bgGradient="linear(to-r,darkblue, blue.500)" color="white">
+          Editar Acudiente
+        </ModalHeader>
+        <ModalCloseButton />
+        <ModalBody
           style={{
-            minWidth: 600,
+            backgroundColor: "#e0f2f1" /* Color de fondo */,
+            minHeight: "70vh", // Asegura que el fondo cubra toda la pantalla
+            fontFamily: "Arial, sans-serif", // Estilo de fuente opcional
+            padding: "2px", // Espacio opcional para el contenido
           }}
         >
-          <ModalHeader
-            bgGradient="linear(to-r,darkblue, blue.500)"
-            color="white"
+          <Grid
+            templateColumns="repeat(2, 1fr)"
+            gap={6}
+            margin={"20px"}
+            padding={"15px"}
           >
-            Editar Acudiente
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody
-            style={{
-              backgroundColor: "#e0f2f1" /* Color de fondo */,
-              minHeight: "70vh", // Asegura que el fondo cubra toda la pantalla
-              fontFamily: "Arial, sans-serif", // Estilo de fuente opcional
-              padding: "2px", // Espacio opcional para el contenido
-            }}
+            <GridItem rowSpan={1} colSpan={1}>
+              <FormControl isRequired>
+                <FormLabel>Tipo de identificación</FormLabel>
+                <Select
+                  value={tipoId}
+                  placeholder="Seleccione el numero de identificación"
+                  onChange={(e) => setTipoId(e.target.value)}
+                >
+                  <option value="Cedula">Cédula</option>
+                  <option value="Pasaporte">Pasaporte</option>
+                </Select>
+              </FormControl>
+            </GridItem>
+            <GridItem rowSpan={1} colSpan={1}>
+              <FormControl isRequired>
+                <FormLabel>Numero de Identificación</FormLabel>
+                <Input
+                  value={id}
+                  placeholder="Digite el numero de Identificación"
+                  onChange={handlerChangeId}
+                />
+              </FormControl>
+              {loading && <p>Cargando...</p>}
+            </GridItem>
+            <GridItem rowSpan={1} colSpan={1}>
+              <FormControl isRequired>
+                <FormLabel>Nombre Acudiente</FormLabel>
+                <Input
+                  value={nombre}
+                  placeholder="Digite el nombre del Acudiente"
+                  onChange={(e) => setNombreAcudiente(e.target.value)}
+                />
+              </FormControl>
+            </GridItem>
+            <GridItem rowSpan={1} colSpan={1}>
+              <Telefono
+                isRequired={true}
+                numeroCelular={numeroCelular}
+                setNumeroCelular={(e) => setNumeroCelular(e)}
+                label={"Número Celular"}
+                maxLength={10}
+              />
+            </GridItem>
+            <GridItem rowSpan={1} colSpan={1}>
+              <FormControl isRequired>
+                <FormLabel>Dirección</FormLabel>
+                <Input
+                  value={direccion}
+                  placeholder="Digite la dirección"
+                  onChange={(e) => setDireccion(e.target.value)}
+                />
+              </FormControl>
+            </GridItem>
+            <GridItem rowSpan={1} colSpan={1}>
+              <Email
+                isRequired={true}
+                correoElectronico={correoElectronico}
+                setCorreoElectronico={(e) => setCorreoElectronico(e)}
+                label={"Correo Electronico"}
+              />
+            </GridItem>
+            <GridItem rowSpan={1} colSpan={2}>
+              <FormControl isRequired>
+                <Checkbox
+                  sx={{
+                    "& .chakra-checkbox__control": {
+                      borderColor: "black",
+                    },
+                    "&:checked .chakra-checkbox__control": {
+                      borderColor: "black",
+                    },
+                  }}
+                  isChecked={imagenPropia}
+                  onChange={(e) => {
+                    setImagenPropia(e.target.checked);
+                  }}
+                >
+                  {Constantes.IMAGEN_PROPIA_LABEL}
+                </Checkbox>
+              </FormControl>
+            </GridItem>
+            <GridItem rowSpan={1} colSpan={1}>
+              <FormControl isRequired>
+                <FormLabel>Profesion Empresa</FormLabel>
+                <Input
+                  value={profesionEmpresa}
+                  placeholder="Digite su cargo actual"
+                  onChange={(e) => setProfesionEmpresa(e.target.value)}
+                />
+              </FormControl>
+            </GridItem>
+            <GridItem rowSpan={1} colSpan={1}>
+              <FormControl isRequired>
+                <FormLabel>Parentesco</FormLabel>
+                <Input
+                  value={parentesco}
+                  placeholder="Digite el parentesco con el deportista"
+                  onChange={(e) => setParentesco(e.target.value)}
+                />
+              </FormControl>
+            </GridItem>
+          </Grid>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            colorScheme="blue"
+            mr={3}
+            onClick={props.onClose}
+            leftIcon={<FaRegTimesCircle />}
           >
-            <Grid
-              templateColumns="repeat(2, 1fr)"
-              gap={6}
-              margin={"20px"}
-              padding={"15px"}
-            >
-              <GridItem rowSpan={1} colSpan={1}>
-                <FormControl isRequired>
-                  <FormLabel>Tipo de identificación</FormLabel>
-                  <Select
-                    value={tipoId}
-                    placeholder="Seleccione el numero de identificación"
-                    onChange={(e) => setTipoId(e.target.value)}
-                  >
-                    <option value="Cedula">Cédula</option>
-                    <option value="Pasaporte">Pasaporte</option>
-                  </Select>
-                </FormControl>
-              </GridItem>
-              <GridItem rowSpan={1} colSpan={1}>
-                <FormControl isRequired>
-                  <FormLabel>Numero de Identificación</FormLabel>
-                  <Input
-                    value={id}
-                    placeholder="Digite el numero de Identificación"
-                    onChange={handlerChangeId}
-                  />
-                </FormControl>
-                {loading && <p>Cargando...</p>}
-              </GridItem>
-              <GridItem rowSpan={1} colSpan={1}>
-                <FormControl isRequired>
-                  <FormLabel>Nombre Acudiente</FormLabel>
-                  <Input
-                    value={nombre}
-                    placeholder="Digite el nombre del Acudiente"
-                    onChange={(e) => setNombreAcudiente(e.target.value)}
-                  />
-                </FormControl>
-              </GridItem>
-              <GridItem rowSpan={1} colSpan={1}>
-                <Telefono
-                  isRequired={true}
-                  numeroCelular={numeroCelular}
-                  setNumeroCelular={(e) => setNumeroCelular(e)}
-                  label={"Número Celular"}
-                  maxLength={10}
-                />
-              </GridItem>
-              <GridItem rowSpan={1} colSpan={1}>
-                <FormControl isRequired>
-                  <FormLabel>Dirección</FormLabel>
-                  <Input
-                    value={direccion}
-                    placeholder="Digite la dirección"
-                    onChange={(e) => setDireccion(e.target.value)}
-                  />
-                </FormControl>
-              </GridItem>
-              <GridItem rowSpan={1} colSpan={1}>
-                <Email
-                  isRequired={true}
-                  correoElectronico={correoElectronico}
-                  setCorreoElectronico={(e) => setCorreoElectronico(e)}
-                  label={"Correo Electronico"}
-                />
-              </GridItem>
-              <GridItem rowSpan={1} colSpan={2}>
-                <FormControl isRequired>
-                  <Checkbox
-                    sx={{
-                      "& .chakra-checkbox__control": {
-                        borderColor: "black",
-                      },
-                      "&:checked .chakra-checkbox__control": {
-                        borderColor: "black",
-                      },
-                    }}
-                    isChecked={imagenPropia}
-                    onChange={(e) => {
-                      setImagenPropia(e.target.checked);
-                    }}
-                  >
-                    {Constantes.IMAGEN_PROPIA_LABEL}
-                  </Checkbox>
-                </FormControl>
-              </GridItem>
-              <GridItem rowSpan={1} colSpan={1}>
-                <FormControl isRequired>
-                  <FormLabel>Profesion Empresa</FormLabel>
-                  <Input
-                    value={profesionEmpresa}
-                    placeholder="Digite su cargo actual"
-                    onChange={(e) => setProfesionEmpresa(e.target.value)}
-                  />
-                </FormControl>
-              </GridItem>
-              <GridItem rowSpan={1} colSpan={1}>
-                <FormControl isRequired>
-                  <FormLabel>Parentesco</FormLabel>
-                  <Input
-                    value={parentesco}
-                    placeholder="Digite el parentesco con el deportista"
-                    onChange={(e) => setParentesco(e.target.value)}
-                  />
-                </FormControl>
-              </GridItem>
-            </Grid>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              colorScheme="blue"
-              mr={3}
-              onClick={props.onClose}
-              leftIcon={<FaRegTimesCircle />}
-            >
-              Cerrar
-            </Button>
-            <Button
-              colorScheme={isFormValid ? "blue" : "gray"}
-              onClick={() => handleClickGuardar()}
-              isDisabled={!isFormValid}
-              leftIcon={<FaSave />}
-            >
-              Guardar
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+            Cerrar
+          </Button>
+          <Button
+            colorScheme={isFormValid ? "blue" : "gray"}
+            onClick={() => handleClickGuardar()}
+            isDisabled={!isFormValid}
+            leftIcon={<FaSave />}
+          >
+            Guardar
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 }
 

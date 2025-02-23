@@ -20,9 +20,6 @@ import { FaRegTimesCircle, FaSave } from "react-icons/fa";
 import { Profesor } from "../../models/Profesor";
 import { Ubicacion } from "../../models/Ubicacion";
 import { Curso } from "../../models/Curso";
-import { ServicioCursos } from "../../services/ServicioCursos";
-import { ServicioProfesores } from "../../services/ServicioProfesores";
-import { ServicioUbicaciones } from "../../services/ServicioUbicaciones";
 import ServicioAgendas from "../../services/ServicioAgenda";
 
 type Props = {
@@ -33,6 +30,9 @@ type Props = {
   onSave: (grupo: Grupo) => void;
   idProximoGrupo: number;
   error: string;
+  profesores: Profesor[];
+  ubicaciones: Ubicacion[];
+  cursos: Curso[];
 };
 
 function EditarGrupo(props: Props) {
@@ -63,35 +63,17 @@ function EditarGrupo(props: Props) {
   }
 
   useEffect(() => {
-    //carga de datos para cursos, profesor y ubicaciones
     const fetchData = async () => {
-      try {
-        const data = await ServicioCursos.getInstancia().obtenerCursos();
-        setCursos(data);
-        const data2 =
-          await ServicioProfesores.getInstancia().obtenerProfesores();
-        setProfesores(data2);
-        const data3 =
-          await ServicioUbicaciones.getInstancia().obtenerUbicaciones();
-        setUbicaciones(data3);
-
-        setError("");
-      } catch (error) {
-        console.error("Error fetching courses:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
+      setProfesores(props.profesores);
+      setUbicaciones(props.ubicaciones);
+      setCursos(props.cursos);
       if (props.grupoSeleccionado) {
-        await ServicioAgendas.getInstancia().obtenerAgendas();
+        //await ServicioAgendas.getInstancia().obtenerAgendas();
 
-        const numAgendas = ServicioAgendas.getInstancia().obtenerAgendasGrupo(
-          props.grupoSeleccionado.idGrupo
-        );
+        const numAgendas =
+          ServicioAgendas.getInstancia().obtenerCantidadAgendasGrupo(
+            props.grupoSeleccionado.idGrupo
+          );
 
         setIsEditable(numAgendas === 0);
       }
@@ -107,8 +89,24 @@ function EditarGrupo(props: Props) {
       setHoraInicio(props.grupoSeleccionado.horaInicio);
       setHoraFin(props.grupoSeleccionado.horaFin);
       setCupos(props.grupoSeleccionado.cupos);
-      setProfesor(props.grupoSeleccionado.profesor);
-      setUbicacion(props.grupoSeleccionado.ubicacion);
+      if (props.grupoSeleccionado.profesor.id == undefined) {
+        const profesorFiltrado = props.profesores?.find(
+          (profesor) =>
+            profesor.id == props.grupoSeleccionado.profesor.toString()
+        );
+        setProfesor(profesorFiltrado ?? null);
+      } else {
+        setProfesor(props.grupoSeleccionado.profesor);
+      }
+      if (props.grupoSeleccionado.ubicacion.id == undefined) {
+        const ubicacionFiltrada = props.ubicaciones?.find(
+          (ubicacion) =>
+            ubicacion.id == Number(props.grupoSeleccionado.ubicacion)
+        );
+        setUbicacion(ubicacionFiltrada ?? null);
+      } else {
+        setUbicacion(props.grupoSeleccionado.ubicacion);
+      }
       setCurso(props.grupoSeleccionado.curso);
     }
   }, [props.grupoSeleccionado]);
@@ -292,7 +290,6 @@ function EditarGrupo(props: Props) {
                   <Select
                     value={profesor?.id || ""}
                     placeholder="Seleccione el profesor"
-                    isDisabled={!isEditable}
                     onChange={(e) => {
                       const selectedProfesor =
                         profesores.find((u) => u.id === e.target.value) || null;

@@ -143,6 +143,12 @@ export class ServicioAgendas {
   // Función para agregar un nuevo agenda
   public async agregarAgenda(agenda: Agenda): Promise<Agenda> {
     try {
+      console.log(
+        "greando agenda: " +
+          agenda.deportista.nombre +
+          " - " +
+          agenda.grupo.curso.nombre
+      );
       const response = await axios.post<Agenda>(this.ruta + "crear", agenda);
 
       return response.data;
@@ -165,7 +171,7 @@ export class ServicioAgendas {
     }
   }
 
-  public obtenerAgendasGrupo(idGrupo: number): number {
+  public obtenerCantidadAgendasGrupo(idGrupo: number): number {
     /*try {
       const response = await axios.get(this.ruta + "agendasPorGrupo/" + idGrupo);
       return response.data.length;
@@ -179,7 +185,6 @@ export class ServicioAgendas {
     if (this.agendas == null) {
       return 0;
     } else {
-      console.log(JSON.stringify(this.agendas));
       const agendasFiltradas = this.agendas.filter(
         (agenda) => agenda.grupo.idGrupo === idGrupo
       );
@@ -189,6 +194,17 @@ export class ServicioAgendas {
       } else {
         return 0;
       }
+    }
+  }
+
+  public obtenerAgendasGrupo(idGrupo: number): Agenda[] {
+    if (this.agendas == null) {
+      return this.agendas;
+    } else {
+      const agendasFiltradas = this.agendas.filter(
+        (agenda) => agenda.grupo.idGrupo === idGrupo
+      );
+      return agendasFiltradas;
     }
   }
 }

@@ -10,7 +10,11 @@ import { Profesor } from "../../models/Profesor";
 import { Ubicacion } from "../../models/Ubicacion";
 import AgendarClase from "./AgendarClase";
 import ServicioAgendas from "../../services/ServicioAgenda";
+import { ServicioCursos } from "../../services/ServicioCursos";
+import { ServicioProfesores } from "../../services/ServicioProfesores";
+import { ServicioUbicaciones } from "../../services/ServicioUbicaciones";
 import { Agenda } from "../../models/Agenda";
+import { StyleSheetConsumer } from "styled-components";
 
 function VerGrupos() {
   const [grupos, setGrupos] = useState<Grupo[]>([]);
@@ -18,6 +22,9 @@ function VerGrupos() {
   const [isOpenEditarGrupos, setIsOpenEditarGrupos] = useState(false);
   const [errorGrupos, setErrorGrupo] = useState("");
   const [isNewGrupo, setIsNewGrupo] = useState(false);
+  const [profesores, setProfesores] = useState<Profesor[]>([]);
+  const [ubicaciones, setUbicaciones] = useState<Ubicacion[]>([]);
+  const [cursos, setCursos] = useState<Curso[]>([]);
   const [grupoSeleccionado, setGrupoSeleccionado] = useState<Grupo>(
     new Grupo(
       0,
@@ -60,6 +67,17 @@ function VerGrupos() {
         // Obtener las agendas para mostrar en la tabla
         const data2 = await ServicioAgendas.getInstancia().obtenerAgendas();
         setAgendas(data2);
+
+        const data3 = await ServicioCursos.getInstancia().obtenerCursos();
+        setCursos(data3);
+
+        const data4 =
+          await ServicioProfesores.getInstancia().obtenerProfesores();
+        setProfesores(data4);
+
+        const data5 =
+          await ServicioUbicaciones.getInstancia().obtenerUbicaciones();
+        setUbicaciones(data5);
 
         //setGrupos(ServicioGrupos.getInstancia().listarGrupos());
       } catch (error) {
@@ -181,7 +199,7 @@ function VerGrupos() {
 
   async function handleEliminarGrupoClick(idGrupo: number): Promise<void> {
     const numAgendas =
-      ServicioAgendas.getInstancia().obtenerAgendasGrupo(idGrupo);
+      ServicioAgendas.getInstancia().obtenerCantidadAgendasGrupo(idGrupo);
 
     if (numAgendas > 0) {
       alert("No se puede eliminar un grupo que tiene deportistas agendados");
@@ -195,6 +213,9 @@ function VerGrupos() {
   return (
     <>
       <EditarGrupo
+        cursos={cursos}
+        profesores={profesores}
+        ubicaciones={ubicaciones}
         isEditarGrupoOpen={isOpenEditarGrupos}
         error={errorGrupos}
         onClose={() => setIsOpenEditarGrupos(false)}
@@ -247,6 +268,8 @@ function VerGrupos() {
                   padding={0.5}
                 >
                   <CeldaGrupos
+                    profesores={profesores}
+                    ubicaciones={ubicaciones}
                     grupos={grupos}
                     dia={dia}
                     hora={hora}
