@@ -58,6 +58,24 @@ function GestionarAsistencia(props: Props) {
     "Jueves", "Viernes", "Sábado",
   ];
 
+  // Cuando se abre con un grupo específico, auto-seleccionar la fecha más reciente de ese día
+  useEffect(() => {
+    if (props.grupoFiltro) {
+      const diaGrupo = props.grupoFiltro.dia;
+      const diaIndex = diasSemana.indexOf(diaGrupo);
+      if (diaIndex !== -1) {
+        const hoy = new Date();
+        const hoyIndex = hoy.getDay();
+        const diff = (hoyIndex - diaIndex + 7) % 7;
+        const fechaClase = new Date(hoy);
+        fechaClase.setDate(hoy.getDate() - diff);
+        setSelectedDate(format(fechaClase, "yyyy-MM-dd"));
+      }
+    } else {
+      setSelectedDate(format(new Date(), "yyyy-MM-dd"));
+    }
+  }, [props.grupoFiltro]);
+
   useEffect(() => {
     const selectedDateObj = new Date(selectedDate + "T00:00:00");
     const diaSeleccionado = diasSemana[selectedDateObj.getDay()];
@@ -75,10 +93,15 @@ function GestionarAsistencia(props: Props) {
 
     setAgendas(filtradas);
 
-    // Inicializar todas las asistencias como "presente" (true)
-    const init: Record<number, boolean> = {};
-    filtradas.forEach((a) => { init[a.idAgenda] = true; });
-    setAsistencias(init);
+    // Cargar asistencias ya guardadas para esta fecha y aplicarlas
+    ServicioAsistencia.getInstancia().obtenerAsistenciasPorFecha(selectedDate).then((guardadas) => {
+      const init: Record<number, boolean> = {};
+      filtradas.forEach((a) => {
+        const guardada = guardadas.find((g) => g.agenda?.idAgenda === a.idAgenda);
+        init[a.idAgenda] = guardada ? guardada.asistio : true;
+      });
+      setAsistencias(init);
+    });
   }, [selectedDate, props.agendas, props.grupos, props.grupoFiltro]);
 
   const handleToggleAsistencia = (idAgenda: number) => {
@@ -180,6 +203,8 @@ function GestionarAsistencia(props: Props) {
                 bg="white"
                 borderColor="#F48FB1"
                 focusBorderColor="#E91E8C"
+                isDisabled={!!props.grupoFiltro}
+                opacity={props.grupoFiltro ? 0.6 : 1}
               />
             </HStack>
           </Box>
