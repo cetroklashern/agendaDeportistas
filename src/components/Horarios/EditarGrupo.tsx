@@ -2,7 +2,6 @@ import {
   FormControl,
   FormLabel,
   Button,
-  Text,
   Grid,
   GridItem,
   Select,
@@ -13,6 +12,18 @@ import {
   ModalOverlay,
   ModalHeader,
   ModalCloseButton,
+  Box,
+  Heading,
+  Badge,
+  Alert,
+  AlertIcon,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  Text,
+  HStack,
 } from "@chakra-ui/react";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Grupo } from "../../models/Grupo";
@@ -20,7 +31,6 @@ import { FaRegTimesCircle, FaSave } from "react-icons/fa";
 import { Profesor } from "../../models/Profesor";
 import { Ubicacion } from "../../models/Ubicacion";
 import { Curso } from "../../models/Curso";
-import ServicioAgendas from "../../services/ServicioAgenda";
 
 type Props = {
   grupoSeleccionado: Grupo;
@@ -40,7 +50,7 @@ function EditarGrupo(props: Props) {
   const [dia, setDia] = useState("");
   const [horaInicio, setHoraInicio] = useState("");
   const [horaFin, setHoraFin] = useState("");
-  const [cupos, setCupos] = useState(0);
+  const [cupos, setCupos] = useState(6);
   const [profesor, setProfesor] = useState<Profesor | null>(null);
   const [ubicacion, setUbicacion] = useState<Ubicacion | null>(null);
   const [isFormValid, setIsFormValid] = useState(false);
@@ -48,14 +58,10 @@ function EditarGrupo(props: Props) {
   const [cursos, setCursos] = useState<Curso[]>([]);
   const [profesores, setProfesores] = useState<Profesor[]>([]);
   const [ubicaciones, setUbicaciones] = useState<Ubicacion[]>([]);
-  const [habilitarHoraInicio, setHabilitarHoraInicio] = useState(true);
   const [errorDisponibilidad, setErrorDiponibilidad] = useState("");
   const [error, setError] = useState("");
-  const [isEditable, setIsEditable] = useState(true);
 
   const horas = [];
-
-  // Generar horas desde las 6:00 AM hasta las 10:00 PM en intervalos de 30 minutos
   for (let i = 7; i <= 21; i++) {
     const hora = i < 10 ? `0${i}` : i;
     horas.push(`${hora}:00`);
@@ -63,32 +69,18 @@ function EditarGrupo(props: Props) {
   }
 
   useEffect(() => {
-    const fetchData = async () => {
-      setProfesores(props.profesores);
-      setUbicaciones(props.ubicaciones);
-      setCursos(props.cursos);
-      if (props.grupoSeleccionado) {
-        //await ServicioAgendas.getInstancia().obtenerAgendas();
-
-        const numAgendas =
-          ServicioAgendas.getInstancia().obtenerCantidadAgendasGrupo(
-            props.grupoSeleccionado.idGrupo
-          );
-
-        setIsEditable(numAgendas === 0);
-      }
-    };
-    fetchData();
+    setProfesores(props.profesores);
+    setUbicaciones(props.ubicaciones);
+    setCursos(props.cursos);
   }, [props.isEditarGrupoOpen]);
 
-  // Se carga los datos del Grupo seleccionado
   useEffect(() => {
     if (props.grupoSeleccionado) {
       setId(props.grupoSeleccionado.idGrupo);
       setDia(props.grupoSeleccionado.dia);
       setHoraInicio(props.grupoSeleccionado.horaInicio);
       setHoraFin(props.grupoSeleccionado.horaFin);
-      setCupos(props.grupoSeleccionado.cupos);
+      setCupos(props.grupoSeleccionado.cupos || 6);
       if (props.grupoSeleccionado.profesor.id == undefined) {
         const profesorFiltrado = props.profesores?.find(
           (profesor) =>
@@ -126,49 +118,9 @@ function EditarGrupo(props: Props) {
     setIsFormValid(isValid);
   }, [dia, horaInicio, cupos, curso, profesor, ubicacion]);
 
-  //evento para guardar los datos capturados en pantalla
-  const handleClickGuardar = () => {
-    if (
-      curso != null &&
-      cupos != null &&
-      profesor != null &&
-      ubicacion != null
-    ) {
-      const nuevoGrupo = new Grupo(
-        props.isNewElement ? props.idProximoGrupo : id,
-        curso,
-        dia,
-        horaInicio,
-        horaFin,
-        6,
-        profesor,
-        ubicacion
-      );
-
-      // Se envian los datos capturados a una base de datos
-      console.log(nuevoGrupo);
-
-      props.onSave(nuevoGrupo);
-    }
-  };
-
   useEffect(() => {
     actualizarHoraFin();
   }, [curso, horaInicio]);
-
-  useEffect(() => {
-    if (
-      curso != null &&
-      curso?.idCurso > 0 &&
-      profesor != null &&
-      profesor?.id != "" &&
-      dia != ""
-    ) {
-      setHabilitarHoraInicio(false);
-    } else {
-      setHabilitarHoraInicio(true);
-    }
-  }, [curso, profesor, dia]);
 
   function actualizarHoraFin() {
     if (horaInicio != "") {
@@ -177,16 +129,15 @@ function EditarGrupo(props: Props) {
       const minuto = parseInt(partesHora[1], 10);
 
       if (curso != null) {
-        let horaFin = hora + parseInt(curso.duracionClaseHoras);
+        let horaFinCalc = hora + parseInt(curso.duracionClaseHoras);
         let minutoFin = 0;
         if (minuto > 0 && parseInt(curso.duracionClaseMinutos) > 0) {
-          horaFin += 1;
+          horaFinCalc += 1;
         } else {
           minutoFin = minuto + parseInt(curso.duracionClaseMinutos);
         }
-
         setHoraFin(
-          `${horaFin < 10 ? `0${horaFin}` : horaFin}:${
+          `${horaFinCalc < 10 ? `0${horaFinCalc}` : horaFinCalc}:${
             minutoFin < 10 ? `0${minutoFin}` : minutoFin
           }`
         );
@@ -198,8 +149,23 @@ function EditarGrupo(props: Props) {
     }
   }
 
+  const handleClickGuardar = () => {
+    if (curso != null && cupos != null && profesor != null && ubicacion != null) {
+      const nuevoGrupo = new Grupo(
+        props.isNewElement ? props.idProximoGrupo : id,
+        curso,
+        dia,
+        horaInicio,
+        horaFin,
+        cupos,
+        profesor,
+        ubicacion
+      );
+      props.onSave(nuevoGrupo);
+    }
+  };
+
   function handlerHoraIncioChange(event: ChangeEvent<HTMLSelectElement>): void {
-    //validar que la hora seleciconada si este dentro de la disponibilidad del profesor
     const horaSeleccionada = event.target.value;
     const partesHora = horaSeleccionada.split(":");
     const hora = parseInt(partesHora[0], 10);
@@ -225,168 +191,259 @@ function EditarGrupo(props: Props) {
           " " +
           event.target.value
       );
-
       setHoraInicio("");
     }
   }
 
   return (
     <>
-      <Modal isOpen={props.isEditarGrupoOpen} onClose={props.onClose}>
+      <Modal isOpen={props.isEditarGrupoOpen} onClose={props.onClose} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent
-          style={{
-            minWidth: 600,
-            minHeight: 500,
-          }}
-        >
+        <ModalContent minWidth={620}>
           <ModalHeader
-            bgGradient="linear(to-r,darkblue, blue.500)"
+            bgGradient="linear(to-r, #E91E8C, #29B6F6)"
             color="white"
+            fontFamily="'Fredoka One', cursive"
+            fontSize="22px"
           >
-            Editar Grupo
+            {props.isNewElement ? "✏️ Crear Grupo" : "👁️ Ver Grupo"}
           </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody
-            style={{
-              backgroundColor: "#e0f2f1" /* Color de fondo */,
-              minHeight: "40vh", // Asegura que el fondo cubra toda la pantalla
-              fontFamily: "Arial, sans-serif", // Estilo de fuente opcional
-              padding: "2px", // Espacio opcional para el contenido
-            }}
-          >
-            <Grid
-              templateColumns="repeat(2, 1fr)"
-              gap={6}
-              margin={"20px"}
-              padding={"15px"}
-            >
-              <GridItem rowSpan={1} colSpan={2}>
-                <FormControl isRequired>
-                  <FormLabel>Curso</FormLabel>
-                  <Select
-                    value={curso?.idCurso}
-                    placeholder="Seleccione el curso"
-                    isDisabled={!props.isNewElement || !isEditable}
-                    onChange={(e) => {
-                      const selectedCurso =
-                        cursos.find(
-                          (u) => u.idCurso === Number(e.target.value)
-                        ) || null;
-                      setCurso(selectedCurso);
-                    }}
-                  >
-                    {cursos.map((curso, index) => (
-                      <option key={index} value={curso.idCurso}>
-                        {curso.nombre}
-                      </option>
-                    ))}
-                  </Select>
-                </FormControl>
-              </GridItem>
-              <GridItem rowSpan={1} colSpan={2}>
-                <FormControl isRequired>
-                  <FormLabel>Profesor</FormLabel>
-                  <Select
-                    value={profesor?.id || ""}
-                    placeholder="Seleccione el profesor"
-                    onChange={(e) => {
-                      const selectedProfesor =
-                        profesores.find((u) => u.id === e.target.value) || null;
-                      setProfesor(selectedProfesor);
-                    }}
-                  >
-                    {profesores.map((profesor, index) => (
-                      <option key={index} value={profesor.id}>
-                        {profesor.nombre}
-                      </option>
-                    ))}
-                  </Select>
-                </FormControl>
-              </GridItem>
-              <GridItem rowSpan={1} colSpan={1}>
-                <FormControl isRequired>
-                  <FormLabel>Ubicación</FormLabel>
-                  <Select
-                    value={ubicacion?.nombre || ""}
-                    placeholder="Seleccione la ubicación"
-                    isDisabled={!isEditable}
-                    onChange={(e) => {
-                      const selectedUbicacion =
-                        ubicaciones.find((u) => u.nombre === e.target.value) ||
-                        null;
-                      setUbicacion(selectedUbicacion);
-                    }}
-                  >
-                    {ubicaciones.map((ubicacion, index) => (
-                      <option key={index} value={ubicacion.nombre}>
-                        {ubicacion.nombre}
-                      </option>
-                    ))}
-                  </Select>
-                </FormControl>
-              </GridItem>
-              <GridItem rowSpan={1} colSpan={1}>
-                <FormControl isRequired>
-                  <FormLabel>Dia de la semana</FormLabel>
-                  <Select
-                    value={dia}
-                    placeholder="Seleccione el día de la semana"
-                    isDisabled={!isEditable}
-                    onChange={(e) => setDia(e.target.value)}
-                  >
-                    <option value="Lunes">Lunes</option>
-                    <option value="Martes">Martes</option>
-                    <option value="Miércoles">Miércoles</option>
-                    <option value="Jueves">Jueves</option>
-                    <option value="Viernes">Viernes</option>
-                    <option value="Sábado">Sábado</option>
-                    <option value="Domingo">Domingo</option>
-                  </Select>
-                </FormControl>
-              </GridItem>
-              <GridItem rowSpan={1} colSpan={1}>
-                <FormControl isRequired>
-                  <FormLabel>Hora de inicio</FormLabel>
-                  <Select
-                    value={horaInicio}
-                    placeholder="Seleccione el hora de inicio"
-                    onChange={handlerHoraIncioChange}
-                    isDisabled={habilitarHoraInicio || !isEditable}
-                  >
-                    {horas.map((hora, index) => (
-                      <option key={index} value={hora}>
-                        {hora}
-                      </option>
-                    ))}
-                  </Select>
-                </FormControl>
-              </GridItem>
-              <GridItem rowSpan={1} colSpan={1}>
-                <FormControl isRequired>
-                  <FormLabel>Hora fin</FormLabel>
-                  <Text>{horaFin}</Text>
-                </FormControl>
-              </GridItem>
-              {error != "" && (
-                <GridItem rowSpan={1} colSpan={2}>
+          <ModalCloseButton color="white" />
+
+          <ModalBody bg="white" p={0}>
+
+            {/* ── Sección 1: ¿Qué curso? ── */}
+            <Box bg="#FFF0F7" borderBottom="2px solid" borderColor="#F48FB1" px={5} py={4}>
+              <Heading
+                size="sm"
+                color="#C2185B"
+                fontFamily="'Fredoka One', cursive"
+                fontWeight="400"
+                mb={3}
+              >
+                🎯 ¿Qué curso?
+              </Heading>
+              <FormControl isRequired>
+                <FormLabel>Curso</FormLabel>
+                <Select
+                  value={curso?.idCurso}
+                  placeholder="Seleccione el curso"
+                  isDisabled={!props.isNewElement}
+                  onChange={(e) => {
+                    const selectedCurso =
+                      cursos.find((u) => u.idCurso === Number(e.target.value)) || null;
+                    setCurso(selectedCurso);
+                  }}
+                >
+                  {cursos.map((c, index) => (
+                    <option key={index} value={c.idCurso}>
+                      {c.nombre}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+              {curso && (
+                <HStack
+                  mt={3}
+                  p={3}
+                  bg="white"
+                  borderRadius="xl"
+                  border="1px solid"
+                  borderColor="#F48FB1"
+                  spacing={3}
+                >
+                  <Box
+                    w="22px"
+                    h="22px"
+                    borderRadius="full"
+                    bg={curso.color}
+                    border="2px solid"
+                    borderColor="gray.200"
+                    flexShrink={0}
+                  />
+                  <Box>
+                    <Text fontSize="sm" fontWeight="700" color="#C2185B">
+                      {curso.nombre}
+                    </Text>
+                    <Text fontSize="xs" color="gray.500">
+                      Duración: {curso.duracionClaseHoras}h {curso.duracionClaseMinutos}min
+                    </Text>
+                  </Box>
+                </HStack>
+              )}
+            </Box>
+
+            {/* ── Sección 2: ¿Quién enseña? ── */}
+            <Box bg="white" borderBottom="2px solid" borderColor="#E3F2FD" px={5} py={4}>
+              <Heading
+                size="sm"
+                color="#0288D1"
+                fontFamily="'Fredoka One', cursive"
+                fontWeight="400"
+                mb={3}
+              >
+                👨‍🏫 ¿Quién enseña?
+              </Heading>
+              <FormControl isRequired>
+                <FormLabel>Profesor</FormLabel>
+                <Select
+                  value={profesor?.id || ""}
+                  placeholder="Seleccione el profesor"
+                  onChange={(e) => {
+                    const selectedProfesor =
+                      profesores.find((u) => u.id === e.target.value) || null;
+                    setProfesor(selectedProfesor);
+                  }}
+                  isDisabled={!props.isNewElement}
+                >
+                  {profesores.map((p, index) => (
+                    <option key={index} value={p.id}>
+                      {p.nombre}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+
+            {/* ── Sección 3: ¿Cuándo y dónde? ── */}
+            <Box bg="#F0F9FF" px={5} py={4}>
+              <Heading
+                size="sm"
+                color="#0288D1"
+                fontFamily="'Fredoka One', cursive"
+                fontWeight="400"
+                mb={3}
+              >
+                📅 ¿Cuándo y dónde?
+              </Heading>
+              <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+                <GridItem>
                   <FormControl isRequired>
-                    <FormLabel color={"red"}>{error}</FormLabel>
+                    <FormLabel>Día de la semana</FormLabel>
+                    <Select
+                      value={dia}
+                      placeholder="Seleccione el día"
+                      isDisabled={!props.isNewElement}
+                      onChange={(e) => setDia(e.target.value)}
+                    >
+                      <option value="Lunes">Lunes</option>
+                      <option value="Martes">Martes</option>
+                      <option value="Miércoles">Miércoles</option>
+                      <option value="Jueves">Jueves</option>
+                      <option value="Viernes">Viernes</option>
+                      <option value="Sábado">Sábado</option>
+                      <option value="Domingo">Domingo</option>
+                    </Select>
                   </FormControl>
                 </GridItem>
-              )}
-              {errorDisponibilidad != "" && (
-                <GridItem rowSpan={1} colSpan={2}>
+                <GridItem>
                   <FormControl isRequired>
-                    <FormLabel color={"red"}>{errorDisponibilidad}</FormLabel>
+                    <FormLabel>Hora de inicio</FormLabel>
+                    <Select
+                      value={horaInicio}
+                      placeholder="Seleccione la hora"
+                      onChange={handlerHoraIncioChange}
+                      isDisabled={!props.isNewElement}
+                    >
+                      {horas.map((hora, index) => (
+                        <option key={index} value={hora}>
+                          {hora}
+                        </option>
+                      ))}
+                    </Select>
                   </FormControl>
                 </GridItem>
-              )}
-            </Grid>
+                <GridItem colSpan={2}>
+                  <FormControl>
+                    <FormLabel>Hora de finalización</FormLabel>
+                    {horaFin ? (
+                      <Badge
+                        colorScheme="blue"
+                        fontSize="md"
+                        px={4}
+                        py={2}
+                        borderRadius="full"
+                      >
+                        🕐 Finaliza a las {horaFin}
+                      </Badge>
+                    ) : (
+                      <Badge
+                        colorScheme="gray"
+                        fontSize="sm"
+                        px={3}
+                        py={2}
+                        borderRadius="full"
+                      >
+                        Se calcula al seleccionar curso y hora de inicio
+                      </Badge>
+                    )}
+                  </FormControl>
+                </GridItem>
+                <GridItem>
+                  <FormControl isRequired>
+                    <FormLabel>Ubicación</FormLabel>
+                    <Select
+                      value={ubicacion?.nombre || ""}
+                      placeholder="Seleccione la ubicación"
+                      isDisabled={!props.isNewElement}
+                      onChange={(e) => {
+                        const selectedUbicacion =
+                          ubicaciones.find((u) => u.nombre === e.target.value) || null;
+                        setUbicacion(selectedUbicacion);
+                      }}
+                    >
+                      {ubicaciones.map((u, index) => (
+                        <option key={index} value={u.nombre}>
+                          {u.nombre}
+                        </option>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </GridItem>
+                <GridItem>
+                  <FormControl isRequired>
+                    <FormLabel>Cupos disponibles</FormLabel>
+                    <NumberInput
+                      value={cupos}
+                      min={1}
+                      max={50}
+                      isDisabled={!props.isNewElement}
+                      onChange={(value) => setCupos(Number(value))}
+                    >
+                      <NumberInputField />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                  </FormControl>
+                </GridItem>
+              </Grid>
+            </Box>
+
+            {/* ── Errores ── */}
+            {(error || errorDisponibilidad) && (
+              <Box px={5} py={3}>
+                {error && (
+                  <Alert status="error" borderRadius="lg" mb={2}>
+                    <AlertIcon />
+                    {error}
+                  </Alert>
+                )}
+                {errorDisponibilidad && (
+                  <Alert status="warning" borderRadius="lg">
+                    <AlertIcon />
+                    {errorDisponibilidad}
+                  </Alert>
+                )}
+              </Box>
+            )}
           </ModalBody>
-          <ModalFooter>
+
+          <ModalFooter bg="gray.50" borderTop="1px solid" borderColor="gray.200">
             <Button
               colorScheme="blue"
+              variant="outline"
               mr={3}
               onClick={props.onClose}
               leftIcon={<FaRegTimesCircle />}
@@ -395,9 +452,10 @@ function EditarGrupo(props: Props) {
             </Button>
             <Button
               colorScheme={isFormValid ? "blue" : "gray"}
-              onClick={() => handleClickGuardar()}
+              onClick={handleClickGuardar}
               isDisabled={!isFormValid}
               leftIcon={<FaSave />}
+              visibility={props.isNewElement ? "visible" : "hidden"}
             >
               Guardar
             </Button>

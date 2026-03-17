@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, Text } from "@chakra-ui/react";
+import { Box, Flex, Heading } from "@chakra-ui/react";
 import RecordatorioCumpleaños from "./RecordatorioCumpleaños";
 import { Center } from "@chakra-ui/react";
 import VerRecordatorios from "./VerRecordatorios";
@@ -41,9 +41,18 @@ function PantallaInicio() {
   }, []);
 
   const fetchRecordatorios = async () => {
+    setLoading(true); // Es buena práctica indicar que la carga ha comenzado
     const result =
       await ServicioRecordatorios.getInstancia().obtenerRecordatorios();
-    setRecordatorios(result);
+
+    // Convertir la cadena de fechaRecordatorio a un objeto Date
+    const recordatoriosConFechasConvertidas = result.map((rec) => ({
+      ...rec,
+      // Si rec.fechaRecordatorio es una cadena ISO, new Date() la parseará correctamente.
+      fechaRecordatorio: new Date(rec.fechaRecordatorio),
+    }));
+
+    setRecordatorios(recordatoriosConFechasConvertidas);
     setLoading(false);
   };
 
@@ -76,6 +85,21 @@ function PantallaInicio() {
     setIsEditarRecordatorioOpen(true);
   }
 
+  async function handleDeleteRecordatorioClick(
+    idRecordatorio: number
+  ): Promise<void> {
+    await ServicioRecordatorios.getInstancia().eliminarRecordatorio(
+      idRecordatorio
+    );
+    fetchRecordatorios();
+  }
+
+  function handleEditRecordatorioClick(idRecordatorio: number): void {
+    setIdRecordatorio(idRecordatorio);
+    setIsNewRecordatorio(false);
+    setIsEditarRecordatorioOpen(true);
+  }
+
   return (
     <>
       <EditRecordatorio
@@ -86,44 +110,52 @@ function PantallaInicio() {
         onClose={handleCloseRecordatorio}
       ></EditRecordatorio>
       <Center p="4">
-        <Text as="b" textAlign="center" fontSize="20px" color="black">
-          Bienvenido a la Agenda deportistas
-        </Text>
+        <Heading size="xl" textAlign="center">
+          ¡Bienvenido a Exploradores! 🤸
+        </Heading>
       </Center>
-      <Flex height="100vh" direction="row">
-        {/* Sección Izquierda */}
+      <Flex direction="row" gap={4} p={4} wrap="wrap">
+        {/* Sección Izquierda — Cumpleañeros */}
         <Box
           flex="1"
-          bg="transparent"
-          color="black"
+          minW="260px"
+          bg="white"
+          border="2px solid"
+          borderColor="#F48FB1"
+          borderRadius="2xl"
           p={5}
+          boxShadow="0 4px 16px rgba(233,30,140,0.12)"
           display="flex"
           flexDirection="column"
-          justifyContent="top center"
         >
-          <Heading size="lg" mb={3}>
-            Cumpleañeros de {currentMonthName}
+          <Heading size="lg" mb={4}>
+            🎂 Cumpleañeros de {currentMonthName}
           </Heading>
           <RecordatorioCumpleaños />
         </Box>
 
-        {/* Sección Derecha */}
+        {/* Sección Derecha — Recordatorios */}
         <Box
           flex="2"
-          bg="transparent"
-          color="black"
-          p={11}
+          minW="320px"
+          bg="white"
+          border="2px solid"
+          borderColor="#81D4FA"
+          borderRadius="2xl"
+          p={5}
+          boxShadow="0 4px 16px rgba(41,182,246,0.12)"
           display="flex"
           flexDirection="column"
-          justifyContent="top center"
         >
-          <Heading size="lg" mb={5}>
-            Recordatorios
+          <Heading size="lg" mb={3}>
+            📋 Recordatorios
           </Heading>
           <VerRecordatorios
             onNewRecordatorioClick={handleNewRecordatorioClick}
             recordatorios={recordatorios}
             loading={loading}
+            onDeleteClick={handleDeleteRecordatorioClick}
+            onEditClick={handleEditRecordatorioClick}
           />
         </Box>
       </Flex>

@@ -1,7 +1,5 @@
-import { useState, useEffect } from "react";
 import {
   Box,
-  useToast,
   Spinner,
   Center,
   TableContainer,
@@ -15,7 +13,6 @@ import {
   FormControl,
   FormLabel,
 } from "@chakra-ui/react";
-import { ServicioRecordatorios } from "../../services/ServicioRecordatorios";
 import Recordatorio from "../../models/Recordatorio";
 import { FaEye, FaPlus, FaTrashAlt } from "react-icons/fa";
 
@@ -24,15 +21,17 @@ type Props = {
   onNewRecordatorioClick: () => void;
   recordatorios: Recordatorio[];
   loading: boolean;
+  onDeleteClick: (id: number) => void;
+  onEditClick: (id: number) => void;
 };
 
 const VerRecordatorios = (props: Props) => {
   function handleClickVer(idRecordatorio: number): void {
-    throw new Error("Function not implemented.");
+    props.onEditClick(idRecordatorio);
   }
 
   function handleClickEliminar(idRecordatorio: number): void {
-    throw new Error("Function not implemented.");
+    props.onDeleteClick(idRecordatorio);
   }
 
   function handleNuevoClick(): void {
@@ -96,6 +95,19 @@ const VerRecordatorios = (props: Props) => {
                           <FormControl>
                             <FormLabel>{recordatorio.titulo}</FormLabel>
                             <FormLabel>{recordatorio.contenido}</FormLabel>
+                            <FormLabel>
+                              Fecha evento:
+                              {recordatorio.fechaRecordatorio instanceof Date
+                                ? recordatorio.fechaRecordatorio.toLocaleDateString(
+                                    "es-ES",
+                                    {
+                                      day: "numeric",
+                                      month: "long",
+                                      year: "numeric",
+                                    }
+                                  )
+                                : String(recordatorio.fechaRecordatorio)}
+                            </FormLabel>
                           </FormControl>
                         </Td>
                         <Td

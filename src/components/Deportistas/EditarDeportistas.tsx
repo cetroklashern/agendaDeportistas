@@ -13,6 +13,8 @@ import {
   Image,
   Textarea,
   FormHelperText,
+  Heading,
+  Text,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { ServicioDeportistas } from "../../services/ServicioDeportistas";
@@ -343,12 +345,17 @@ function EditarDeportistas(props: Props) {
         idDeportista={id}
         isNewElement={isNewAcudiente}
       ></EditarAcudientes>
+      <Box bg="white" borderRadius="2xl" border="2px solid" borderColor="#F48FB1" boxShadow="0 4px 20px rgba(233,30,140,0.1)" m={4} overflow="hidden">
+        <Box bgGradient="linear(to-r, #E91E8C, #C2185B, #1565C0, #29B6F6)" px={6} py={4}>
+          <Heading size="md" color="white" fontFamily="'Fredoka One', cursive" fontWeight="400">
+            🏃 {props.isNewDeportista ? "Nuevo Deportista" : "Editar Deportista"}
+          </Heading>
+        </Box>
+        <Box p={5}>
       <Grid
         templateRows="repeat(2, 1fr)"
         templateColumns="repeat(4, 1fr)"
         gap={4}
-        margin={"20px"}
-        padding={"15px"}
       >
         <GridItem rowSpan={1} colSpan={1}>
           <FormControl isRequired>
@@ -467,10 +474,11 @@ function EditarDeportistas(props: Props) {
             <Checkbox
               sx={{
                 "& .chakra-checkbox__control": {
-                  borderColor: "black",
+                  borderColor: "#E91E8C",
                 },
-                "&:checked .chakra-checkbox__control": {
-                  borderColor: "black",
+                "& .chakra-checkbox__control[data-checked]": {
+                  bg: "#E91E8C",
+                  borderColor: "#E91E8C",
                 },
               }}
               isChecked={imagenPropia}
@@ -485,10 +493,11 @@ function EditarDeportistas(props: Props) {
             <Checkbox
               sx={{
                 "& .chakra-checkbox__control": {
-                  borderColor: "black",
+                  borderColor: "#E91E8C",
                 },
-                "&:checked .chakra-checkbox__control": {
-                  borderColor: "black",
+                "& .chakra-checkbox__control[data-checked]": {
+                  bg: "#E91E8C",
+                  borderColor: "#E91E8C",
                 },
               }}
               isChecked={informacionMensualidad}
@@ -503,10 +512,11 @@ function EditarDeportistas(props: Props) {
             <Checkbox
               sx={{
                 "& .chakra-checkbox__control": {
-                  borderColor: "black",
+                  borderColor: "#E91E8C",
                 },
-                "&:checked .chakra-checkbox__control": {
-                  borderColor: "black",
+                "& .chakra-checkbox__control[data-checked]": {
+                  bg: "#E91E8C",
+                  borderColor: "#E91E8C",
                 },
               }}
               isChecked={informacionReposicion}
@@ -521,10 +531,11 @@ function EditarDeportistas(props: Props) {
             <Checkbox
               sx={{
                 "& .chakra-checkbox__control": {
-                  borderColor: "black",
+                  borderColor: "#E91E8C",
                 },
-                "&:checked .chakra-checkbox__control": {
-                  borderColor: "black",
+                "& .chakra-checkbox__control[data-checked]": {
+                  bg: "#E91E8C",
+                  borderColor: "#E91E8C",
                 },
               }}
               isChecked={informacionVacaciones}
@@ -539,10 +550,11 @@ function EditarDeportistas(props: Props) {
             <Checkbox
               sx={{
                 "& .chakra-checkbox__control": {
-                  borderColor: "black",
+                  borderColor: "#E91E8C",
                 },
-                "&:checked .chakra-checkbox__control": {
-                  borderColor: "black",
+                "& .chakra-checkbox__control[data-checked]": {
+                  bg: "#E91E8C",
+                  borderColor: "#E91E8C",
                 },
               }}
               isChecked={comprobanteInscripcion}
@@ -621,34 +633,31 @@ function EditarDeportistas(props: Props) {
             )}
           </FormControl>
         </GridItem>
-        <GridItem rowSpan={1} colSpan={1}>
-          <Button
-            className="buttonSombreado"
-            mt={4}
-            colorScheme="blue"
-            type="submit"
-            margin={"30px"}
-            onClick={() => handleClickCancelar(false)}
-            leftIcon={<FaRegTimesCircle />}
-          >
-            Cancelar
-          </Button>
-        </GridItem>
-        <GridItem rowSpan={1} colSpan={1}>
-          <Button
-            colorScheme={isFormValid ? "blue" : "gray"}
-            className="buttonSombreado"
-            mt={4}
-            type="submit"
-            margin={"30px"}
-            onClick={() => handleClickGuardar()}
-            isDisabled={!isFormValid}
-            leftIcon={<FaSave />}
-          >
-            Guardar
-          </Button>
+        <GridItem rowSpan={1} colSpan={4}>
+          <Box display="flex" gap={3} mt={4} justifyContent="flex-end">
+            <Button
+              className="buttonSombreado"
+              colorScheme="blue"
+              variant="outline"
+              onClick={() => handleClickCancelar(false)}
+              leftIcon={<FaRegTimesCircle />}
+            >
+              Cancelar
+            </Button>
+            <Button
+              colorScheme={isFormValid ? "blue" : "gray"}
+              className="buttonSombreado"
+              onClick={() => handleClickGuardar()}
+              isDisabled={!isFormValid}
+              leftIcon={<FaSave />}
+            >
+              Guardar
+            </Button>
+          </Box>
         </GridItem>
       </Grid>
+        </Box>
+      </Box>
     </>
   );
 }

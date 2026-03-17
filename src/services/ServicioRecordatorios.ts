@@ -24,7 +24,7 @@ export class ServicioRecordatorios {
     // Implementar la logica para cargar recordatorios desde la API
     try {
       // Realizar llamado a servicio rest
-      const response = await axios.get(this.ruta + "listar");
+      const response = await axios.get(this.ruta + "listarHoy");
 
       this.recordatorios = response.data;
       console.log(this.recordatorios);
@@ -92,7 +92,7 @@ export class ServicioRecordatorios {
   ): Promise<Recordatorio> {
     try {
       // Realizar llamado a servicio rest para actualizar el recordatorio
-      const response = await axios.put(this.ruta + "actualizar", recordatorio);
+      const response = await axios.post(this.ruta + "actualizar", recordatorio);
       return response.data;
     } catch (error) {
       console.error(error);

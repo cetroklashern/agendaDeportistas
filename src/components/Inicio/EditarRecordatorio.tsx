@@ -14,6 +14,8 @@ import {
   ModalCloseButton,
   Grid,
   GridItem,
+  NumberInput,
+  NumberInputField,
 } from "@chakra-ui/react";
 import { ServicioRecordatorios } from "../../services/ServicioRecordatorios";
 import Recordatorio from "../../models/Recordatorio";
@@ -32,14 +34,14 @@ const EditRecordatorio = (props: Props) => {
   const [titulo, setTitulo] = useState("");
   const [contenido, setContenido] = useState("");
   const [fechaVisible, setFechaVisible] = useState(new Date());
-  const [fechaFinVisible, setFechaFinVisible] = useState(new Date());
+  const [diasRecordatorio, setDiasRecordatorio] = useState(1);
   const [isFormValid, setIsFormValid] = useState(false);
   const [recordatorio, setRecordatorio] = useState<Recordatorio>({
     idRecordatorio: 1,
     titulo: "",
     contenido: "",
-    fechaVisible: new Date(),
-    fechaFinVisible: new Date(),
+    fechaRecordatorio: new Date(),
+    diasRecordatorio: 1,
   });
 
   useEffect(() => {
@@ -53,8 +55,8 @@ const EditRecordatorio = (props: Props) => {
         if (data) {
           setTitulo(data?.titulo);
           setContenido(data?.contenido);
-          setFechaVisible(new Date(data.fechaVisible));
-          setFechaFinVisible(new Date(data.fechaFinVisible));
+          setFechaVisible(new Date(data.fechaRecordatorio));
+          setDiasRecordatorio(data.diasRecordatorio);
           setRecordatorio(data);
         }
       } else {
@@ -63,23 +65,27 @@ const EditRecordatorio = (props: Props) => {
           idRecordatorio: 1,
           titulo: "",
           contenido: "",
-          fechaVisible: new Date(),
-          fechaFinVisible: new Date(),
+          fechaRecordatorio: new Date(),
+          diasRecordatorio: 1,
         });
+        setTitulo("");
+        setContenido("");
+        setFechaVisible(new Date());
+        setDiasRecordatorio(1);
       }
     } catch (error) {
       console.error("Error al cargar el recordatorio:", error);
     }
-  }, [props.idRecordatorio]);
+  }, [props.isEditarRecordatorioOpen]);
 
   useEffect(() => {
     const isValid =
       titulo !== "" &&
       contenido !== "" &&
       fechaVisible !== undefined &&
-      fechaFinVisible !== undefined;
+      diasRecordatorio !== undefined;
     setIsFormValid(isValid);
-  }, [titulo, contenido, fechaVisible, fechaFinVisible]);
+  }, [titulo, contenido, fechaVisible, diasRecordatorio]);
 
   const handleClickGuardar = async () => {
     // Realizar la solicitud PUT para actualizar el recordatorio
@@ -91,7 +97,7 @@ const EditRecordatorio = (props: Props) => {
           titulo,
           contenido,
           fechaVisible,
-          fechaFinVisible
+          diasRecordatorio
         );
       } else {
         nuevoRecordatorio = new Recordatorio(
@@ -99,7 +105,7 @@ const EditRecordatorio = (props: Props) => {
           titulo,
           contenido,
           fechaVisible,
-          fechaFinVisible
+          diasRecordatorio
         );
       }
       props.onSave(nuevoRecordatorio);
@@ -116,18 +122,11 @@ const EditRecordatorio = (props: Props) => {
           minWidth: 600,
         }}
       >
-        <ModalHeader bgGradient="linear(to-r,darkblue, blue.500)" color="white">
-          Editar Recordatorio
+        <ModalHeader bgGradient="linear(to-r, #E91E8C, #29B6F6)" color="white" fontFamily="'Fredoka One', cursive" fontSize="22px">
+          📝 Editar Recordatorio
         </ModalHeader>
-        <ModalCloseButton />
-        <ModalBody
-          style={{
-            backgroundColor: "#e0f2f1" /* Color de fondo */,
-            minHeight: "40vh", // Asegura que el fondo cubra toda la pantalla
-            fontFamily: "Arial, sans-serif", // Estilo de fuente opcional
-            padding: "2px", // Espacio opcional para el contenido
-          }}
-        >
+        <ModalCloseButton color="white" />
+        <ModalBody bg="white" minHeight="40vh">
           <Grid
             templateColumns="repeat(2, 1fr)"
             gap={6}
@@ -168,13 +167,15 @@ const EditRecordatorio = (props: Props) => {
               </FormControl>
             </GridItem>
             <GridItem rowSpan={1} colSpan={1}>
-              <FormControl>
-                <DateTimePicker
-                  fechaNacimiento={fechaFinVisible}
-                  setFechaNacimiento={setFechaFinVisible}
-                  isRequired={true}
-                  label={"Fecha fin"}
-                />
+              <FormControl isRequired>
+                <FormLabel>Días Recordatorio</FormLabel>
+                <NumberInput
+                  value={diasRecordatorio}
+                  defaultValue={0}
+                  onChange={(value) => setDiasRecordatorio(Number(value))}
+                >
+                  <NumberInputField />
+                </NumberInput>
               </FormControl>
             </GridItem>
           </Grid>

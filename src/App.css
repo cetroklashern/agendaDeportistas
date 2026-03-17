@@ -1,8 +1,20 @@
-/*agregar estilo box-shadow a todos los controles tipo boton*/
+/* ============================================
+   Exploradores Gimnasio Infantil — Estilos Globales
+   Paleta: Verde #2E7D32, Amarillo #FFD600,
+           Rosa #E91E8C, Azul #29B6F6, Naranja #FF6D00
+   ============================================ */
+
+/* Botones con sombra suave */
 .buttonSombreado {
-  box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 3px 8px rgba(233, 30, 140, 0.35) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+.buttonSombreado:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(233, 30, 140, 0.45) !important;
 }
 
+/* Columna centrada */
 .columnaCentrada {
   display: flex;
   justify-content: center;
@@ -10,9 +22,50 @@
   height: 100%;
 }
 
+/* Encabezado de tabla — azul cielo de marca */
 .encabezadoTabla {
-  background-color: gray;
+  background-color: #29B6F6;
   color: white;
   text-align: center;
-  border: 2px solid #f80505;
+  border: 1px solid #0288D1;
+  font-family: 'Fredoka One', cursive;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+/* Tarjetas / panels con borde sutil */
+.cardExploradores {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(233, 30, 140, 0.1);
+  border: 1px solid #F8BBD0;
+  padding: 20px;
+}
+
+/* Títulos de sección */
+.tituloSeccion {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  color: #E91E8C;
+  font-size: 20px;
+}
+
+/* Badge de color para cursos */
+.colorCurso {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+
+/* Suavizar bordes negros de celdas de tabla */
+td[style*="border: 1px solid black"],
+th[style*="border: 1px solid black"] {
+  border-color: #F8BBD0 !important;
+}
+
+/* Spinner de carga — color de marca */
+.chakra-spinner {
+  color: #E91E8C !important;
 }

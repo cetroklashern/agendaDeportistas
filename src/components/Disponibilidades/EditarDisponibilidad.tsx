@@ -82,21 +82,11 @@ function EditarDisponibilidad(props: Props) {
             minWidth: 300,
           }}
         >
-          <ModalHeader
-            bgGradient="linear(to-r,darkblue, blue.500)"
-            color="white"
-          >
-            Editar Disponibilidad
+          <ModalHeader bgGradient="linear(to-r, #29B6F6, #E91E8C)" color="white" fontFamily="'Fredoka One', cursive" fontSize="22px">
+            🗓️ Editar Disponibilidad
           </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody
-            style={{
-              backgroundColor: "#e0f2f1" /* Color de fondo */,
-              minHeight: "40vh", // Asegura que el fondo cubra toda la pantalla
-              fontFamily: "Arial, sans-serif", // Estilo de fuente opcional
-              padding: "2px", // Espacio opcional para el contenido
-            }}
-          >
+          <ModalCloseButton color="white" />
+          <ModalBody bg="white" minHeight="40vh">
             <Grid
               templateColumns="repeat(2, 1fr)"
               gap={6}

@@ -5,6 +5,8 @@ import {
   Input,
   Grid,
   GridItem,
+  Box,
+  Heading,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { ServicioUbicaciones } from "../../services/ServicioUbicaciones";
@@ -177,12 +179,25 @@ function EditarUbicaciones(props: Props) {
             : disponibilidadSelected.id
         }
       ></EditarDisponibilidad>
+      <Box
+        bg="white"
+        borderRadius="2xl"
+        border="2px solid"
+        borderColor="#81D4FA"
+        boxShadow="0 4px 20px rgba(41,182,246,0.1)"
+        m={4}
+        overflow="hidden"
+      >
+        <Box bgGradient="linear(to-r, #29B6F6, #E91E8C)" px={6} py={4}>
+          <Heading size="md" color="white" fontFamily="'Fredoka One', cursive">
+            📍 {props.isNewUbicacion ? "Nueva Sede" : "Editar Sede"}
+          </Heading>
+        </Box>
+        <Box p={5}>
       <Grid
         templateRows="repeat(2, 1fr)"
         templateColumns="repeat(4, 1fr)"
         gap={4}
-        margin={"20px"}
-        padding={"15px"}
       >
         <GridItem rowSpan={1} colSpan={1}>
           <FormControl isRequired>
@@ -253,34 +268,33 @@ function EditarUbicaciones(props: Props) {
             ></VerDisponibilidades>
           </FormControl>
         </GridItem>
-        <GridItem rowSpan={1} colSpan={1}>
-          <Button
-            className="buttonSombreado"
-            mt={4}
-            colorScheme="blue"
-            type="submit"
-            margin={"30px"}
-            onClick={() => handleClickCancelar(false)}
-            leftIcon={<FaRegTimesCircle />}
-          >
-            Cancelar
-          </Button>
-        </GridItem>
-        <GridItem rowSpan={1} colSpan={1}>
-          <Button
-            colorScheme={isFormValid ? "blue" : "gray"}
-            className="buttonSombreado"
-            mt={4}
-            type="submit"
-            margin={"30px"}
-            onClick={() => handleClickGuardar()}
-            isDisabled={!isFormValid}
-            leftIcon={<FaSave />}
-          >
-            Guardar
-          </Button>
+        <GridItem rowSpan={1} colSpan={4}>
+          <Box display="flex" gap={3} pt={2} pb={2}>
+            <Button
+              className="buttonSombreado"
+              colorScheme="blue"
+              type="submit"
+              onClick={() => handleClickCancelar(false)}
+              leftIcon={<FaRegTimesCircle />}
+              variant="outline"
+            >
+              Cancelar
+            </Button>
+            <Button
+              colorScheme={isFormValid ? "blue" : "gray"}
+              className="buttonSombreado"
+              type="submit"
+              onClick={() => handleClickGuardar()}
+              isDisabled={!isFormValid}
+              leftIcon={<FaSave />}
+            >
+              Guardar
+            </Button>
+          </Box>
         </GridItem>
       </Grid>
+        </Box>
+      </Box>
     </>
   );
 }

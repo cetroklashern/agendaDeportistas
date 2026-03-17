@@ -83,14 +83,16 @@ function AgendarClase(props: Props) {
             );
 
           //filtrar los deportistas que no esten en la agenda del grupo actual
-          data = data.filter(
-            (deportista) =>
-              !agendasGrupo.some(
-                (agenda) => agenda.deportista.id === deportista.id
-              )
-          );
+          if (data != null && data.length > 0) {
+            data = data.filter(
+              (deportista) =>
+                !agendasGrupo.some(
+                  (agenda) => agenda.deportista.id === deportista.id
+                )
+            );
 
-          setDeportistas(data);
+            setDeportistas(data);
+          }
         }
       } catch (error) {
         console.error("Error fetching deportistas:", error);
@@ -120,21 +122,11 @@ function AgendarClase(props: Props) {
             minHeight: 500,
           }}
         >
-          <ModalHeader
-            bgGradient="linear(to-r,darkblue, blue.500)"
-            color="white"
-          >
-            Buscar Deportista por nombre
+          <ModalHeader bgGradient="linear(to-r, #29B6F6, #E91E8C)" color="white" fontFamily="'Fredoka One', cursive" fontSize="22px">
+            🔍 Buscar Deportista por nombre
           </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody
-            style={{
-              backgroundColor: "#e0f2f1" /* Color de fondo */,
-              minHeight: "40vh", // Asegura que el fondo cubra toda la pantalla
-              fontFamily: "Arial, sans-serif", // Estilo de fuente opcional
-              padding: "2px", // Espacio opcional para el contenido
-            }}
-          >
+          <ModalCloseButton color="white" />
+          <ModalBody bg="white" minHeight="40vh">
             <Grid
               templateColumns="repeat(1, 1fr)"
               gap={1}
@@ -152,6 +144,7 @@ function AgendarClase(props: Props) {
             </Grid>
             <Table
               variant="striped"
+              colorScheme="blue"
               textAlign="center"
               mb={4}
               style={{ borderSpacing: 0 }}
@@ -193,21 +186,11 @@ function AgendarClase(props: Props) {
             minHeight: 500,
           }}
         >
-          <ModalHeader
-            bgGradient="linear(to-r,darkblue, blue.500)"
-            color="white"
-          >
-            Agregar Deportista al Curso
+          <ModalHeader bgGradient="linear(to-r, #E91E8C, #29B6F6)" color="white" fontFamily="'Fredoka One', cursive" fontSize="22px">
+            🏋️ Agregar Deportista al Curso
           </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody
-            style={{
-              backgroundColor: "#e0f2f1" /* Color de fondo */,
-              minHeight: "40vh", // Asegura que el fondo cubra toda la pantalla
-              fontFamily: "Arial, sans-serif", // Estilo de fuente opcional
-              padding: "2px", // Espacio opcional para el contenido
-            }}
-          >
+          <ModalCloseButton color="white" />
+          <ModalBody bg="white" minHeight="40vh">
             <Grid
               templateColumns="repeat(1, 1fr)"
               gap={1}
@@ -244,6 +227,7 @@ function AgendarClase(props: Props) {
             </Grid>
             <Table
               variant="striped"
+              colorScheme="blue"
               textAlign="center"
               mb={4}
               style={{ borderSpacing: 0 }}
