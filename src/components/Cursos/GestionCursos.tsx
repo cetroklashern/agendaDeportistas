@@ -1,4 +1,4 @@
-import { Text, Center } from "@chakra-ui/react";
+import { Heading, Center } from "@chakra-ui/react";
 import { useState } from "react";
 import VerCursos from "./VerCursos";
 import EditarCursos from "./EditarCursos";
@@ -15,9 +15,9 @@ function GestionCursos(props: Props) {
   return (
     <>
       <Center p="4">
-        <Text as="b" textAlign="center" fontSize="20px" color="black">
+        <Heading size="lg" textAlign="center">
           {props.titulo}
-        </Text>
+        </Heading>
       </Center>
       {!!!isNewElement ? (
         <VerCursos

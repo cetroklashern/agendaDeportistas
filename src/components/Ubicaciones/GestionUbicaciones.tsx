@@ -1,4 +1,4 @@
-import { Text, Center } from "@chakra-ui/react";
+import { Heading, Center } from "@chakra-ui/react";
 import { useState } from "react";
 import { ServicioUbicaciones } from "../../services/ServicioUbicaciones";
 import VerUbicaciones from "./VerUbicaciones";
@@ -55,11 +55,11 @@ function GestionUbicaciones() {
   return (
     <>
       <Center p="4">
-        <Text as="b" textAlign="center" fontSize="20px" color="black">
+        <Heading size="lg" textAlign="center">
           {!!!isEditing
             ? "Listado de Sedes Registradas"
             : "Captura de Datos de la Sede"}
-        </Text>
+        </Heading>
       </Center>
       {!!!isEditing ? (
         <VerUbicaciones

@@ -143,18 +143,11 @@ function EditarAcudientes(props: Props) {
           minWidth: 600,
         }}
       >
-        <ModalHeader bgGradient="linear(to-r,darkblue, blue.500)" color="white">
-          Editar Acudiente
+        <ModalHeader bgGradient="linear(to-r, #E91E8C, #29B6F6)" color="white" fontFamily="'Fredoka One', cursive" fontSize="22px">
+          👤 Editar Acudiente
         </ModalHeader>
-        <ModalCloseButton />
-        <ModalBody
-          style={{
-            backgroundColor: "#e0f2f1" /* Color de fondo */,
-            minHeight: "70vh", // Asegura que el fondo cubra toda la pantalla
-            fontFamily: "Arial, sans-serif", // Estilo de fuente opcional
-            padding: "2px", // Espacio opcional para el contenido
-          }}
-        >
+        <ModalCloseButton color="white" />
+        <ModalBody bg="white" minHeight="70vh">
           <Grid
             templateColumns="repeat(2, 1fr)"
             gap={6}

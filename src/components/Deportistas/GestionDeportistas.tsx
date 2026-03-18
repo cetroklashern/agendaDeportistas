@@ -1,4 +1,4 @@
-import { Text, Center } from "@chakra-ui/react";
+import { Heading, Center } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { Deportista } from "../../models/Deportista";
 import { ServicioDeportistas } from "../../services/ServicioDeportistas";
@@ -82,11 +82,11 @@ function GestionDeportistas() {
   return (
     <>
       <Center p="4">
-        <Text as="b" textAlign="center" fontSize="20px" color="black">
+        <Heading size="lg" textAlign="center">
           {!!!isEditing
             ? "Listado de Deportistas Inscritos"
             : "Captura de Datos del Deportista"}
-        </Text>
+        </Heading>
       </Center>
       {!!!isEditing ? (
         <VerDeportistas

@@ -1,9 +1,15 @@
-import { Table, Tbody, Tr, Td, Th, Thead, Button } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import {
+  Table, Tbody, Tr, Td, Th, Thead, Button, Box,
+  AlertDialog, AlertDialogBody, AlertDialogFooter,
+  AlertDialogHeader, AlertDialogContent, AlertDialogOverlay,
+  useToast,
+} from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
 import { ServicioGrupos } from "../../services/ServicioGrupos";
 import { Grupo } from "../../models/Grupo";
 import CeldaGrupos from "./CeldaGrupos";
 import { FaPlus } from "react-icons/fa";
+import { MdChecklistRtl } from "react-icons/md";
 import EditarGrupo from "./EditarGrupo";
 import { Curso } from "../../models/Curso";
 import { Profesor } from "../../models/Profesor";
@@ -14,7 +20,7 @@ import { ServicioCursos } from "../../services/ServicioCursos";
 import { ServicioProfesores } from "../../services/ServicioProfesores";
 import { ServicioUbicaciones } from "../../services/ServicioUbicaciones";
 import { Agenda } from "../../models/Agenda";
-import { StyleSheetConsumer } from "styled-components";
+import GestionarAsistencia from "./GestionarAsistencia";
 
 function VerGrupos() {
   const [grupos, setGrupos] = useState<Grupo[]>([]);
@@ -25,6 +31,10 @@ function VerGrupos() {
   const [profesores, setProfesores] = useState<Profesor[]>([]);
   const [ubicaciones, setUbicaciones] = useState<Ubicacion[]>([]);
   const [cursos, setCursos] = useState<Curso[]>([]);
+  const [grupoAEliminar, setGrupoAEliminar] = useState<number | null>(null);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const cancelRef = useRef<HTMLButtonElement>(null);
+  const toast = useToast();
   const [grupoSeleccionado, setGrupoSeleccionado] = useState<Grupo>(
     new Grupo(
       0,
@@ -38,6 +48,9 @@ function VerGrupos() {
     )
   );
   const [isEditarAgendaOpen, setIsEditarAgendaOpen] = useState(false);
+  const [isGestionarAsistenciaOpen, setIsGestionarAsistenciaOpen] =
+    useState(false);
+  const [grupoAsistencia, setGrupoAsistencia] = useState<Grupo | null>(null);
 
   const dias = [
     "Lunes",
@@ -59,34 +72,31 @@ function VerGrupos() {
 
   // Obtener todos los cursos para mostrar en la tabla
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await ServicioGrupos.getInstancia().obtenerGrupos();
-        setGrupos(data);
-
-        // Obtener las agendas para mostrar en la tabla
-        const data2 = await ServicioAgendas.getInstancia().obtenerAgendas();
-        setAgendas(data2);
-
-        const data3 = await ServicioCursos.getInstancia().obtenerCursos();
-        setCursos(data3);
-
-        const data4 =
-          await ServicioProfesores.getInstancia().obtenerProfesores();
-        setProfesores(data4);
-
-        const data5 =
-          await ServicioUbicaciones.getInstancia().obtenerUbicaciones();
-        setUbicaciones(data5);
-
-        //setGrupos(ServicioGrupos.getInstancia().listarGrupos());
-      } catch (error) {
-        console.error("Error fetching courses:", error);
-      }
-    };
-
     fetchData();
-  }, [isOpenEditarGrupos]);
+  }, [isOpenEditarGrupos, isGestionarAsistenciaOpen]);
+
+  const fetchData = async () => {
+    try {
+      const data = await ServicioGrupos.getInstancia().obtenerGrupos();
+      setGrupos(data);
+
+      // Obtener las agendas para mostrar en la tabla
+      const data2 = await ServicioAgendas.getInstancia().obtenerAgendas();
+      setAgendas(data2);
+
+      const data3 = await ServicioCursos.getInstancia().obtenerCursos();
+      setCursos(data3);
+
+      const data4 = await ServicioProfesores.getInstancia().obtenerProfesores();
+      setProfesores(data4);
+
+      const data5 =
+        await ServicioUbicaciones.getInstancia().obtenerUbicaciones();
+      setUbicaciones(data5);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+    }
+  };
 
   function handleNewGrupoClick(): void {
     setErrorGrupo("");
@@ -97,7 +107,7 @@ function VerGrupos() {
         "",
         "",
         "",
-        8,
+        6,
         new Profesor("", "", "", "", "", "", "", "", "", "0", []),
         new Ubicacion(0, "", "", "", "", false, new Date(), new Date(), [])
       )
@@ -180,6 +190,8 @@ function VerGrupos() {
       } else {
         await ServicioGrupos.getInstancia().actualizarGrupo(grupo);
       }
+      await fetchData();
+
       setIsOpenEditarGrupos(false);
     }
   }
@@ -202,16 +214,69 @@ function VerGrupos() {
       ServicioAgendas.getInstancia().obtenerCantidadAgendasGrupo(idGrupo);
 
     if (numAgendas > 0) {
-      alert("No se puede eliminar un grupo que tiene deportistas agendados");
+      toast({
+        title: "No se puede eliminar",
+        description: "Este grupo tiene deportistas agendados. Retira los deportistas antes de eliminar el grupo.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
       return;
-    } else {
-      await ServicioGrupos.getInstancia().eliminarGrupo(idGrupo);
-      setGrupos(ServicioGrupos.getInstancia().listarGrupos());
     }
+    setGrupoAEliminar(idGrupo);
+    setIsAlertOpen(true);
+  }
+
+  async function confirmarEliminar(): Promise<void> {
+    if (grupoAEliminar !== null) {
+      await ServicioGrupos.getInstancia().eliminarGrupo(grupoAEliminar);
+      fetchData();
+    }
+    setIsAlertOpen(false);
+    setGrupoAEliminar(null);
+  }
+
+  function handleAsistencia() {
+    setGrupoAsistencia(null);
+    setIsGestionarAsistenciaOpen(true);
+  }
+
+  function handleAsistenciaGrupo(grupo: Grupo) {
+    setGrupoAsistencia(grupo);
+    setIsGestionarAsistenciaOpen(true);
+  }
+
+  function handleSaveAsistencia() {
+    setIsGestionarAsistenciaOpen(false);
   }
 
   return (
     <>
+      <AlertDialog
+        isOpen={isAlertOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={() => setIsAlertOpen(false)}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontFamily="'Fredoka One', cursive" fontWeight="400" fontSize="22px" color="#C2185B">
+              🗑️ Eliminar grupo
+            </AlertDialogHeader>
+            <AlertDialogBody>
+              ¿Estás seguro de que deseas eliminar este grupo? Esta acción no se puede deshacer.
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={() => setIsAlertOpen(false)} variant="outline" colorScheme="blue">
+                Cancelar
+              </Button>
+              <Button colorScheme="red" onClick={confirmarEliminar} ml={3}>
+                Eliminar
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
       <EditarGrupo
         cursos={cursos}
         profesores={profesores}
@@ -230,6 +295,16 @@ function VerGrupos() {
         idProximaAgenda={agendas.length + 1}
         grupoSeleccionado={grupoSeleccionado}
       />
+      <GestionarAsistencia
+        isGestionarAsistenciaOpen={isGestionarAsistenciaOpen}
+        onClose={() => setIsGestionarAsistenciaOpen(false)}
+        onSave={handleSaveAsistencia}
+        agendas={agendas}
+        grupos={grupos}
+        profesores={profesores}
+        cursos={cursos}
+        grupoFiltro={grupoAsistencia}
+      />
       <Button
         mt={4}
         colorScheme="blue"
@@ -239,15 +314,27 @@ function VerGrupos() {
         className="buttonSombreado"
         leftIcon={<FaPlus />}
       >
-        Agregar Nuevo
+        Abrir Nuevo Espacio
       </Button>
+      <Button
+        mt={4}
+        colorScheme="blue"
+        type="submit"
+        margin={"20px"}
+        onClick={() => handleAsistencia()}
+        className="buttonSombreado"
+        leftIcon={<MdChecklistRtl />}
+      >
+        Tomar asistencia
+      </Button>
+      <Box overflowX="auto" overflowY="auto" maxHeight="calc(100vh - 260px)" borderRadius="xl" border="2px solid" borderColor="#F48FB1" mx={4} mb={4}>
       <Table
         variant="striped"
+        colorScheme="blue"
         textAlign="center"
-        mb={4}
         style={{ borderSpacing: 0 }}
       >
-        <Thead>
+        <Thead position="sticky" top={0} zIndex={2}>
           <Tr>
             <Th></Th>
             {dias.map((dia, index) => (
@@ -260,29 +347,42 @@ function VerGrupos() {
         <Tbody>
           {horas.map((hora, horaIndex) => (
             <Tr key={horaIndex}>
-              <Td>{hora}</Td> {/* Columna de horas */}
+              <Td>{hora}</Td>
               {dias.map((dia, diaIndex) => (
                 <Td
                   key={`${horaIndex}-${diaIndex}`}
                   textAlign="center"
                   padding={0.5}
                 >
-                  <CeldaGrupos
-                    profesores={profesores}
-                    ubicaciones={ubicaciones}
-                    grupos={grupos}
-                    dia={dia}
-                    hora={hora}
-                    onAgendarGrupo={handleAgendarGrupoClick}
-                    onVerDetalleGrupo={handleVerGrupoClick}
-                    onEliminarGrupo={handleEliminarGrupoClick}
-                  />
+                  <>
+                    {grupos.filter(
+                      (grupo) =>
+                        grupo.dia === dia &&
+                        grupo.horaInicio <= hora &&
+                        grupo.horaFin >= hora
+                    ).length > 0 ? (
+                      <CeldaGrupos
+                        profesores={profesores}
+                        ubicaciones={ubicaciones}
+                        grupos={grupos}
+                        dia={dia}
+                        hora={hora}
+                        onAgendarGrupo={handleAgendarGrupoClick}
+                        onVerDetalleGrupo={handleVerGrupoClick}
+                        onEliminarGrupo={handleEliminarGrupoClick}
+                        onAsistenciaGrupo={handleAsistenciaGrupo}
+                      />
+                    ) : (
+                      <></>
+                    )}
+                  </>
                 </Td>
               ))}
             </Tr>
           ))}
         </Tbody>
       </Table>
+      </Box>
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { Text, Center } from "@chakra-ui/react";
+import { Heading, Center } from "@chakra-ui/react";
 import { useState } from "react";
 import VerProfesores from "./VerProfesores";
 import EditarProfesores from "./EditarProfesores";
@@ -37,9 +37,9 @@ function GestionProfesores(props: Props) {
   return (
     <>
       <Center p="4">
-        <Text as="b" textAlign="center" fontSize="20px" color="black">
+        <Heading size="lg" textAlign="center">
           {props.titulo}
-        </Text>
+        </Heading>
       </Center>
       {!!!isEditing ? (
         <VerProfesores

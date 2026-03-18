@@ -1,6 +1,6 @@
 import { Box, Button, Grid, GridItem, HStack, Text } from "@chakra-ui/react";
 import { Grupo } from "../../models/Grupo";
-import { FaEye, FaTrash, FaAddressBook } from "react-icons/fa";
+import { FaEye, FaTrash, FaAddressBook, FaClipboardCheck } from "react-icons/fa";
 import ServicioAgendas from "../../services/ServicioAgenda";
 import { Profesor } from "../../models/Profesor";
 import { Ubicacion } from "../../models/Ubicacion";
@@ -22,6 +22,7 @@ type Props = {
   onAgendarGrupo: (grupo: Grupo) => void;
   onVerDetalleGrupo: (grupo: Grupo) => void;
   onEliminarGrupo: (idGrupo: number) => void;
+  onAsistenciaGrupo: (grupo: Grupo) => void;
   profesores: Profesor[];
   ubicaciones: Ubicacion[];
 };
@@ -70,18 +71,39 @@ const CeldaGrupos = (props: Props) => {
       <Grid templateColumns={`repeat(${gruposDelDia.length}, 1fr)`} gap={2}>
         {gruposDelDia.map((grupo, index) => {
           const textColor = getContrastYIQ(grupo.curso.color);
+          const inscritos = ServicioAgendas.getInstancia().obtenerCantidadAgendasGrupo(grupo.idGrupo);
+          const estaLleno = inscritos >= grupo.cupos;
 
           return (
             <GridItem key={index}>
               <Box
                 borderRadius="md"
-                p={0}
+                p={1}
                 height="90px"
                 minWidth={"180px"}
                 bg={grupo.curso.color}
                 color={textColor}
                 title={grupo.curso.nombre}
+                border={estaLleno ? "2px solid #C2185B" : "2px solid transparent"}
+                opacity={estaLleno ? 0.85 : 1}
+                position="relative"
               >
+                {estaLleno && (
+                  <Box
+                    position="absolute"
+                    top={0}
+                    right={0}
+                    bg="#C2185B"
+                    color="white"
+                    fontSize="9px"
+                    fontWeight="700"
+                    px={1}
+                    borderBottomLeftRadius="md"
+                    borderTopRightRadius="md"
+                  >
+                    LLENO
+                  </Box>
+                )}
                 <Text
                   fontWeight="bold"
                   fontSize="14px"
@@ -91,11 +113,15 @@ const CeldaGrupos = (props: Props) => {
                 >
                   {obtenerInicialesONombreCurso(grupo.curso.nombre)}
                 </Text>
-                <Text fontSize="14px" height={"18px"} margin={0} padding={0}>
-                  {ServicioAgendas.getInstancia().obtenerCantidadAgendasGrupo(
-                    grupo.idGrupo
-                  )}
-                  /{grupo.cupos}
+                <Text
+                  fontSize="14px"
+                  height={"18px"}
+                  margin={0}
+                  padding={0}
+                  color={estaLleno ? "#C2185B" : textColor}
+                  fontWeight={estaLleno ? "700" : "400"}
+                >
+                  {inscritos}/{grupo.cupos}
                 </Text>
                 <Text fontSize="12px" height={"18px"} margin={0} padding={0}>
                   {obtenerNombreProfesor(
@@ -105,7 +131,7 @@ const CeldaGrupos = (props: Props) => {
                   )}
                 </Text>
                 <HStack
-                  spacing={2}
+                  spacing={1}
                   mt={1}
                   justifyContent="flex-end"
                   marginRight={"2px"}
@@ -121,6 +147,18 @@ const CeldaGrupos = (props: Props) => {
                   <Button
                     size="xs"
                     colorScheme="green"
+                    variant="outline"
+                    bg="whiteAlpha.700"
+                    onClick={() => props.onAsistenciaGrupo(grupo)}
+                    title="Tomar asistencia"
+                  >
+                    <FaClipboardCheck />
+                  </Button>
+                  <Button
+                    size="xs"
+                    colorScheme="blue"
+                    variant="outline"
+                    bg="whiteAlpha.700"
                     onClick={() => handlerVerDetalleGrupo(grupo)}
                     title="Ver detalle Grupo"
                   >
@@ -129,6 +167,8 @@ const CeldaGrupos = (props: Props) => {
                   <Button
                     size="xs"
                     colorScheme="red"
+                    variant="ghost"
+                    bg="whiteAlpha.700"
                     onClick={() => handlerEliminarGrupo(grupo.idGrupo)}
                     title="Eliminar Grupo"
                   >
